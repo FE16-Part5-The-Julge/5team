@@ -1,0 +1,56 @@
+@import url('https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans-neo@1.0.0/css/spoqa-han-sans-neo.min.css');
+
+* {
+	/* 기본 폰트 패밀리 설정 */
+	font-family: 'Spoqa Han Sans Neo';
+	font: inherit;
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+:root {
+	--black: #111322;
+	--gray50: #7d7986;
+	--gray40: #a4a1aa;
+	--gray30: #cbc9cf;
+	--gray20: #e5e4e7;
+	--gray10: #f2f2f3;
+	--gray5: #fafafa;
+	--white: #ffffff;
+
+	--red40: #ff4040;
+	--red30: #ff8d72;
+	--red20: #ffaf9b;
+	--red10: #ffebe7;
+
+	--blue20: #0080ff;
+	--blue10: #cce6ff;
+
+	--green20: #20a81e;
+	--green10: #d4f7d4;
+
+	--kakao: #fee500;
+}
+
+ul,
+li {
+	list-style: none;
+}
+
+button {
+	border: none;
+	background: none;
+	border-radius: 0;
+	cursor: pointer;
+}
+
+a {
+	text-decoration: none;
+	color: inherit;
+}
+
+input {
+	border: none;
+	background-color: transparent;
+}
