@@ -52,7 +52,6 @@ export default function ProfilePage() {
 				const resApp = await getUserApplication(currentUserId, userToken);
 
 				const resitem = res.item;
-				console.log(resApp);
 				setUserData(resitem);
 				setUserAppData(resApp);
 			} catch (err) {
@@ -66,7 +65,6 @@ export default function ProfilePage() {
 	}, []);
 
 	useEffect(() => {
-		console.log(userData);
 		const check = userData?.name || false;
 		if (check) {
 			setExistProfile(true);
@@ -99,7 +97,7 @@ export default function ProfilePage() {
 		);
 	}
 
-	const applyList = userAppData?.items || false;
+	const applyList = userAppData?.items?.length > 0 ? userAppData.items : false;
 	console.log(applyList);
 
 	return (
@@ -144,7 +142,7 @@ export default function ProfilePage() {
 							신청 내역
 						</div>
 						{applyList ? (
-							<WorkTable />
+							<WorkTable items={userAppData.items} />
 						) : (
 							<div className={styles.applyListContent}>
 								<div style={{ display: 'flex', justifyContent: 'center' }}>
