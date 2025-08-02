@@ -4,7 +4,6 @@ import {
 	getCoreRowModel,
 	getPaginationRowModel,
 	flexRender,
-	ColumnDef,
 } from '@tanstack/react-table';
 import styles from './WorkTable.module.css';
 

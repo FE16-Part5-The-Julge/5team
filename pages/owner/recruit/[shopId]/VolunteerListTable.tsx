@@ -7,8 +7,8 @@ import {
 } from '@tanstack/react-table';
 import styles from './VolunteerListTable.module.css';
 import axiosInstance from '@/api/settings/axiosInstance';
+import { updateApplication } from '@/api/applications/updateApplication';
 
-// ------------------ 타입 정의 ------------------
 interface Applicant {
 	id: string;
 	applyid: string;
@@ -17,8 +17,6 @@ interface Applicant {
 	bio?: string;
 	status: string;
 	createdAt: string;
-	shopId: string;
-	noticeId: string;
 }
 
 interface VolunteerListTableProps {
@@ -26,50 +24,8 @@ interface VolunteerListTableProps {
 	noticeId: string;
 }
 
-// ------------------ 유틸 함수 ------------------
-function useDeviceType(): 'mobile' | 'tablet' | 'desktop' {
-	const [deviceType, setDeviceType] = useState<'mobile' | 'tablet' | 'desktop'>('desktop');
-
-	useEffect(() => {
-		const handleResize = () => {
-			const width = window.innerWidth;
-			if (width <= 768) setDeviceType('mobile');
-			else if (width <= 1024) setDeviceType('tablet');
-			else setDeviceType('desktop');
-		};
-		handleResize();
-		window.addEventListener('resize', handleResize);
-		return () => window.removeEventListener('resize', handleResize);
-	}, []);
-
-	return deviceType;
-}
-
-async function fetchApplicants(shopId: string, noticeId: string, offset: number, limit: number) {
-	const [applyId, setApplyId] = useState(false);
-	const res = await axiosInstance.get(`shops/${shopId}/notices/${noticeId}/applications`, {
-		params: { offset, limit },
-	});
-	return res.data;
-}
-
-async function updateApplicationStatus(
-	shopId: string,
-	noticeId: string,
-	applyId: string,
-	status: 'accepted' | 'rejected'
-) {
-	try {
-		await axiosInstance.put(`shops/${shopId}/notices/${noticeId}/applications/${applyId}`, {
-			status,
-		});
-	} catch (error) {
-		console.log('catch 에러다임마', error);
-	}
-}
-
-// ------------------ 컬럼 정의 ------------------
-const baseColumns: any[] = [
+// Static column definitions moved outside the component
+const baseColumns = (shopId: string, noticeId: string) => [
 	{
 		accessorKey: 'name',
 		header: '신청자',
@@ -93,20 +49,14 @@ const baseColumns: any[] = [
 		header: '상태',
 		meta: { responsive: 'mobile' },
 		cell: ({ row }: any) => {
-			const status = row.original.status;
-			const applyid = row.original.applyid;
+			const { applyid, status } = row.original;
 			const [loading, setLoading] = useState(false);
 			const [localStatus, setLocalStatus] = useState(status);
 
 			const onClickStatusChange = async (newStatus: 'accepted' | 'rejected') => {
 				setLoading(true);
 				try {
-					await updateApplicationStatus(
-						row.original.shopId,
-						row.original.noticeId,
-						applyid,
-						newStatus
-					);
+					await updateApplication(shopId, noticeId, applyid, newStatus);
 					setLocalStatus(newStatus);
 				} catch (e) {
 					alert('상태 변경 실패: ' + e);
@@ -115,8 +65,12 @@ const baseColumns: any[] = [
 				}
 			};
 
-			if (localStatus === 'accepted') return <span>승인완료</span>;
-			if (localStatus === 'rejected') return <span>거절됨</span>;
+			if (localStatus === 'accepted') {
+				return <span className={styles.statusAccepted}>승인완료</span>;
+			}
+			if (localStatus === 'rejected') {
+				return <span className={styles.statusRejected}>거절됨</span>;
+			}
 
 			return (
 				<div className={styles.actions}>
@@ -140,7 +94,31 @@ const baseColumns: any[] = [
 	},
 ];
 
-// ------------------ 컴포넌트 ------------------
+async function fetchApplicants(shopId: string, noticeId: string, offset: number, limit: number) {
+	const res = await axiosInstance.get(`shops/${shopId}/notices/${noticeId}/applications`, {
+		params: { offset, limit },
+	});
+	return res.data;
+}
+
+function useDeviceType(): 'mobile' | 'tablet' | 'desktop' {
+	const [deviceType, setDeviceType] = useState<'mobile' | 'tablet' | 'desktop'>('desktop');
+
+	useEffect(() => {
+		const handleResize = () => {
+			const width = window.innerWidth;
+			if (width <= 768) setDeviceType('mobile');
+			else if (width <= 1024) setDeviceType('tablet');
+			else setDeviceType('desktop');
+		};
+		handleResize();
+		window.addEventListener('resize', handleResize);
+		return () => window.removeEventListener('resize', handleResize);
+	}, []);
+
+	return deviceType;
+}
+
 const VolunteerListTable = ({ shopId, noticeId }: VolunteerListTableProps) => {
 	const [applications, setApplicants] = useState<Applicant[]>([]);
 	const [offset, setOffset] = useState(0);
@@ -148,14 +126,16 @@ const VolunteerListTable = ({ shopId, noticeId }: VolunteerListTableProps) => {
 	const limit = 5;
 	const deviceType = useDeviceType();
 
+	const columns = useMemo(() => baseColumns(shopId, noticeId), [shopId, noticeId]);
+
 	const filteredColumns = useMemo(() => {
-		return baseColumns.filter(col => {
+		return columns.filter(col => {
 			const responsive = col.meta?.responsive ?? 'desktop';
 			if (deviceType === 'mobile') return ['mobile'].includes(responsive);
 			if (deviceType === 'tablet') return ['mobile', 'tablet'].includes(responsive);
 			return true;
 		});
-	}, [deviceType]);
+	}, [deviceType, columns]);
 
 	useEffect(() => {
 		if (!shopId || !noticeId) return;
@@ -163,8 +143,9 @@ const VolunteerListTable = ({ shopId, noticeId }: VolunteerListTableProps) => {
 		const loadApplicants = async () => {
 			try {
 				const res = await fetchApplicants(shopId, noticeId, offset, limit);
-				if (!res.items) return;
-
+				if (!res.items) {
+					return;
+				}
 				const mapped = res.items.map((application: any) => {
 					const user = application.item.user?.item;
 					return {

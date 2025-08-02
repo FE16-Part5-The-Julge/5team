@@ -87,7 +87,7 @@ export default function Login() {
 				if (status === 404) {
 					pwModal.openModal();
 				} else {
-					alert('로그인 중 오류가 발생했습니다.');
+					pwModal.openModal();
 				}
 			} else {
 				alert('예상치 못한 오류가 발생했습니다.');
@@ -96,6 +96,11 @@ export default function Login() {
 			setLoading(false);
 		}
 	};
+
+	const handleClickLogoImage = () => {
+		router.push('/posts');
+	};
+
 	return (
 		<div className={styles.container}>
 			{pwModal.renderModal(Alert, {
@@ -103,7 +108,9 @@ export default function Login() {
 				onConfirm: pwModal.closeModal,
 			})}
 			<div className={styles.imgcontainer}>
-				<Logo />
+				<button onClick={handleClickLogoImage}>
+					<Logo />
+				</button>
 			</div>
 
 			<form className={styles.formBox} onSubmit={handleLogin}>
