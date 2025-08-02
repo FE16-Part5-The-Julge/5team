@@ -16,13 +16,15 @@ import { BaseButton } from '@/components/common/BaseButton/index';
 //api
 import { getUser } from '@/api/users/getUser';
 import WorkTable from './WorkTable';
+import { getUserApplication } from '@/api/applications/getUserApplication';
 
 //받아올 값 : 이름 ,전화번호 ,주소 , 소개
 //employee/profile
 export default function ProfilePage() {
 	const router = useRouter();
 
-	const [userData, setUserData] = useState<any>(null); //實 데이터 상태
+	const [userData, setUserData] = useState<any>(null); //데이터 상태
+	const [userAppData, setUserAppData] = useState<any>(null); // 유저 지원 정보
 	//const [applyList, setApplyList] = useState(); // 신청 내역 여부입니다. default: false.
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
@@ -47,10 +49,12 @@ export default function ProfilePage() {
 				// getUser 함수 호출
 				//	console.log(`userID : ${currentUserId}, userToken : ${userToken}`); 토큰, 유저 아이디 값 확인
 				const res = await getUser(currentUserId, userToken);
+				const resApp = await getUserApplication(currentUserId, userToken);
 
 				const resitem = res.item;
-				//console.log(resitem); 값 잘 왔는지 확인. 객체 나오면 성공
+				console.log(resApp);
 				setUserData(resitem);
+				setUserAppData(resApp);
 			} catch (err) {
 				setError('사용자 정보를 가져오는데 실패했습니다.');
 				console.error(err);
@@ -62,13 +66,20 @@ export default function ProfilePage() {
 	}, []);
 
 	useEffect(() => {
-		//console.log(`resItem : ${userData}`);
-		if (userData != null) {
+		console.log(userData);
+		const check = userData?.name || false;
+		if (check) {
 			setExistProfile(true);
 		} else {
 			setExistProfile(false);
 		}
 	}, [userData]);
+
+	//****************** 중요한거 아님 */
+	useEffect(() => {
+		console.log(userAppData);
+	}, [userAppData]);
+	///////////////////////////////////////////
 
 	const handleClickPost = () => {
 		router.push('/posts');
@@ -87,8 +98,10 @@ export default function ProfilePage() {
 			</div>
 		);
 	}
-	const applyList = userData?.shop || false;
+
+	const applyList = userAppData?.items || false;
 	console.log(applyList);
+
 	return (
 		<>
 			{existProfile ? (
