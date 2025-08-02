@@ -95,6 +95,10 @@ export default function Register() {
 		}
 	};
 
+	const handleClickLogoImage = () => {
+		router.push('/posts');
+	};
+
 	return (
 		<div className={styles.container}>
 			{pwModal.renderModal(Alert, {
@@ -102,7 +106,9 @@ export default function Register() {
 				onConfirm: pwModal.closeModal,
 			})}
 			<div className={styles.imgcontainer}>
-				<Logo />
+				<button onClick={handleClickLogoImage}>
+					<Logo />
+				</button>
 			</div>
 
 			<form className={styles.formBox} onSubmit={handleSubmit}>
