@@ -57,9 +57,10 @@ export const getServerSideProps: GetServerSideProps = async () => {
 
 const Posts = ({ personalNotices, initialNotices }: Props) => {
 	// 맞춤공고
+	const [noticesToShow, setNoticesToShow] = useState(3);
 	const initialCustomNotices = personalNotices.items
 		.filter(({ item }) => !isClosed(item))
-		.slice(0, 3);
+		.slice(0, noticesToShow);
 	const [customNotices, setCustomNotices] = useState(initialCustomNotices);
 
 	// 필터 관련
@@ -104,6 +105,21 @@ const Posts = ({ personalNotices, initialNotices }: Props) => {
 	const isFirstPage = currentPage === 1;
 	const isLastPage = currentPage === totalPages;
 
+	// 모바일 크기에서 맞춤공고 2개 렌더링
+	useEffect(() => {
+		const handleResize = () => {
+			if (window.innerWidth < 768) {
+				setNoticesToShow(2);
+			} else {
+				setNoticesToShow(3);
+			}
+		};
+		handleResize();
+		window.addEventListener('resize', handleResize);
+
+		return () => window.removeEventListener('resize', handleResize);
+	}, []);
+
 	// 로컬스토리지에서 주소값 가져와서 맞춤공고 렌더링
 	useEffect(() => {
 		const token = localStorage.getItem('token');
@@ -113,7 +129,7 @@ const Posts = ({ personalNotices, initialNotices }: Props) => {
 		if (!isLoggedIn) {
 			const nonLoggedInNotices = personalNotices.items
 				.filter(({ item }) => !isClosed(item))
-				.slice(0, 3);
+				.slice(0, noticesToShow);
 			setCustomNotices(nonLoggedInNotices);
 			return;
 		}
@@ -136,31 +152,31 @@ const Posts = ({ personalNotices, initialNotices }: Props) => {
 
 					// 필터링된 공고가 있는 경우 3개까지 보여줌
 					if (filteredUpdatedNotices.length > 0) {
-						const finalNotices = filteredUpdatedNotices.slice(0, 3);
+						const finalNotices = filteredUpdatedNotices.slice(0, noticesToShow);
 						setCustomNotices(finalNotices);
 					} else {
 						// 사용자 주소에 맞는 공고가 없으면 기본공고 렌더링
 						const fallbackNotices = personalNotices.items
 							.filter(({ item }) => !isClosed(item))
-							.slice(0, 3);
+							.slice(0, noticesToShow);
 						setCustomNotices(fallbackNotices);
 					}
 				} else {
 					// 사용자 주소가 없으면, 기본공고 렌더링
 					const fallbackNotices = personalNotices.items
 						.filter(({ item }) => !isClosed(item))
-						.slice(0, 3);
+						.slice(0, noticesToShow);
 					setCustomNotices(fallbackNotices);
 				}
 			} catch {
 				const fallbackNotices = personalNotices.items
 					.filter(({ item }) => !isClosed(item))
-					.slice(0, 3);
+					.slice(0, noticesToShow);
 				setCustomNotices(fallbackNotices);
 			}
 		};
 		fetchUserAddress();
-	}, [user, personalNotices]);
+	}, [user, personalNotices, noticesToShow]);
 
 	// 전체 공고 부분 렌더링 + 검색 기능
 	useEffect(() => {
@@ -321,7 +337,7 @@ const Posts = ({ personalNotices, initialNotices }: Props) => {
 							}}
 							className={styles.arrowButton}
 						>
-							<img src="/img/icon/leftIcon.svg" alt="이전페이지" />
+							<img src="/img/icon/leftIcon.svg" alt="이전페이지" width={9} height={16} />
 						</button>
 
 						{Array.from({ length: pageCount }).map((_, i) => {
@@ -343,7 +359,7 @@ const Posts = ({ personalNotices, initialNotices }: Props) => {
 							onClick={() => setOffset(offset + NOTICE_LIMIT)}
 							className={styles.arrowButton}
 						>
-							<img src="/img/icon/rightIcon.svg" alt="다음페이지" />
+							<img src="/img/icon/rightIcon.svg" alt="다음페이지" width={9} height={16} />
 						</button>
 					</div>
 				</div>

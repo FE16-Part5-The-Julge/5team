@@ -170,6 +170,7 @@
 	}
 
 	.allPostContainer {
+		height: 1361px;
 		padding: 60px 0px;
 	}
 
@@ -198,6 +199,7 @@
 
 	.allPostContainer {
 		width: 964px;
+		height: 985px;
 		margin: 0 auto;
 	}
 

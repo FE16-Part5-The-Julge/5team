@@ -89,7 +89,12 @@ const DetailFilter = ({
 								<div className={styles.selectedItem}>
 									<span>{selectedAddress}</span>
 									<div className={styles.close} onClick={handleRemoveAddress}>
-										<img src="/img/icon/closeIcon.svg" alt="주소선택 취소" />
+										<Image
+											src="/img/icon/closeIcon.svg"
+											alt="주소선택 취소"
+											width={20}
+											height={20}
+										/>
 									</div>
 								</div>
 							)}

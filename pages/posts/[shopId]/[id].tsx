@@ -87,7 +87,7 @@ const PostDetailPage = () => {
 		if (noticeId) {
 			saveRecentShops(noticeId);
 		}
-	}, [shopId, noticeId]);
+	}, [shopId, noticeId, recentShops]);
 
 	// 로컬스토리지 확인해서 사장님이면 리다이렉트 처리
 	useEffect(() => {
