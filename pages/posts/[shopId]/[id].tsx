@@ -120,11 +120,13 @@ const PostDetailPage = () => {
 		const updateNoticeBoard = async () => {
 			const res = await fetchNoticeList({ offset: 0, limit: 100 });
 			const allNotices = res.items.map(({ item }) => ({ ...item, closed: isClosed(item) }));
-			const filteredNotices = allNotices.filter(notice => recentShops.includes(String(notice.id)));
+			//const filteredNotices = allNotices.filter(notice => recentShops.includes(String(notice.id)));
+			const filteredNotices = recentShops
+				.map(id => allNotices.find(notice => String(notice.id) === id))
+				.filter((n): n is Notice => !!n);
 
 			setNewlyNotices(filteredNotices);
 		};
-
 		updateNoticeBoard();
 	}, [recentShops]);
 
