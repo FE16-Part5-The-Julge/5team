@@ -63,10 +63,17 @@ export default function CreateNotice() {
 			alert('인증 정보가 없습니다.');
 			return;
 		}
-
+		let startsAt = form.startsAt;
+		if (startsAt.includes(' ')) {
+			const parsed = new Date(startsAt.replace(' ', 'T') + ':00Z');
+			if (!isNaN(parsed.getTime())) {
+				startsAt = parsed.toISOString();
+			}
+		}
 		try {
 			const res = await createNotice({
 				...form,
+				startsAt,
 				shopId,
 				token,
 			});
@@ -98,62 +105,69 @@ export default function CreateNotice() {
 	};
 
 	return (
-		<>
+		<div className={styles.createContainer}>
 			<h2 className={styles.title}>
-				공고 등록 <CloseIcon />
+				공고 등록
+				<span onClick={() => router.back()} className={styles.closeIcon}>
+					<CloseIcon />
+				</span>
 			</h2>
 			<form className={styles.form} onSubmit={handleSubmit}>
-				<NumberInput
-					id="hourlypay"
-					label="시급"
-					value={form.hourlypay}
-					onChange={value =>
-						setForm(prev => ({
-							...prev,
-							hourlypay: value,
-						}))
-					}
-					placeholder="10000"
-					required
-					unitText="원"
-					error={!form.hourlypay ? '시급을 입력해주세요' : ''}
-				/>
+				<div className={styles.formGrid}>
+					<NumberInput
+						id="hourlypay"
+						label="시급"
+						value={form.hourlypay}
+						onChange={value =>
+							setForm(prev => ({
+								...prev,
+								hourlypay: value,
+							}))
+						}
+						placeholder="10000"
+						required
+						unitText="원"
+						error={!form.hourlypay ? '시급을 입력해주세요' : ''}
+					/>
 
-				<TextInput
-					id="startsAt"
-					label="시작 일시"
-					value={form.startsAt}
-					onChange={handleChange}
-					placeholder="2023-12-23T00:00:00Z"
-				/>
+					<TextInput
+						id="startsAt"
+						label="시작 일시"
+						value={form.startsAt}
+						onChange={handleChange}
+						placeholder="2023-12-25 13:00"
+					/>
 
-				<NumberInput
-					id="workhour"
-					label="업무 시간"
-					value={form.workhour}
-					onChange={value =>
-						setForm(prev => ({
-							...prev,
-							workhour: value,
-						}))
-					}
-					placeholder="3"
-					required
-					unitText="시간"
-					error={!form.workhour ? '시간을 입력해주세요' : ''}
-				/>
-
-				<TextareaInput
-					id="description"
-					label="공고 설명"
-					value={form.description}
-					onChange={handleChange}
-				/>
-
-				<BaseButton type="submit" color="red" size="noneSize" className={styles.myCustomButton}>
-					등록하기
-				</BaseButton>
-
+					<NumberInput
+						id="workhour"
+						label="업무 시간"
+						value={form.workhour}
+						onChange={value =>
+							setForm(prev => ({
+								...prev,
+								workhour: value,
+							}))
+						}
+						placeholder="3"
+						required
+						unitText="시간"
+						error={!form.workhour ? '시간을 입력해주세요' : ''}
+					/>
+					<div />
+					<div className="myCustomTextareaWrapper">
+						<TextareaInput
+							id="description"
+							label="공고 설명"
+							value={form.description}
+							onChange={handleChange}
+						/>
+					</div>
+				</div>
+				<div className={styles.buttonGroup}>
+					<BaseButton type="submit" color="red" size="noneSize">
+						등록하기
+					</BaseButton>
+				</div>
 				<Alert
 					isOpen={isAlertOpen}
 					message="등록이 완료되었습니다."
@@ -161,6 +175,6 @@ export default function CreateNotice() {
 					onClose={handleClose}
 				/>
 			</form>
-		</>
+		</div>
 	);
 }
