@@ -86,6 +86,14 @@ function dateIncode(dateData: string, workTime: number) {
 
 function statusSetFunc(statusprop) {
 	switch (statusprop) {
+		case 'pending':
+			return '대기중';
+		case 'accepted':
+			return '승인 완료';
+		case 'rejected':
+			return '거절';
+		default:
+			return '거절';
 	}
 }
 
