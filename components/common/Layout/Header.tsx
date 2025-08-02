@@ -26,7 +26,7 @@ export default function Header() {
 
 	useEffect(() => {
 		const token = localStorage.getItem('token');
-		console.log(user);
+		//console.log(user);
 		if (token == null) {
 			setLoginState(false);
 		} else {

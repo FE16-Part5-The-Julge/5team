@@ -97,6 +97,12 @@
 	}
 }
 
+.button,
+.buttonRegist {
+	width: 346px;
+	height: 47px;
+}
+
 @media screen and (max-width: 767px) {
 	.profileBlock {
 		padding-top: 40px;
@@ -133,6 +139,18 @@
 
 	.Title#applyListTitle {
 		margin-bottom: 16px;
+	}
+
+	.button {
+		width: 108px;
+		height: 37px;
+		font-size: 14px;
+	}
+
+	.buttonRegist {
+		width: 150px;
+		height: 37px;
+		font-size: 14px;
 	}
 }
 
