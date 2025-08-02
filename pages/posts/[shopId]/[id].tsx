@@ -62,18 +62,11 @@ const PostDetailPage = () => {
 					shopItem = shopRes.item;
 				}
 
-				const test = await fetchNoticeList({ offset: 0, limit: 100 });
-				const allNotices = test.items.map(({ item }) => ({ ...item, closed: isClosed(item) }));
-				const filteredNotices = allNotices.filter(notice =>
-					recentShops.includes(String(notice.id))
-				);
-
 				if (!noticeItem || !shopItem) throw new Error('데이터 없음');
 
 				setNotice({ ...noticeItem, closed: isClosed(noticeItem) });
 				setShop(shopItem);
 				//setNewlyNotices(listRes.items.map(({ item }) => ({ ...item, closed: isClosed(item) })));
-				setNewlyNotices(filteredNotices);
 			} catch {
 				setAlertMessage('페이지 정보를 불러오지 못했습니다.');
 				setIsConfirmOpen(true);
@@ -87,7 +80,7 @@ const PostDetailPage = () => {
 		if (noticeId) {
 			saveRecentShops(noticeId);
 		}
-	}, [shopId, noticeId, recentShops]);
+	}, [shopId, noticeId]);
 
 	// 로컬스토리지 확인해서 사장님이면 리다이렉트 처리
 	useEffect(() => {
@@ -120,6 +113,20 @@ const PostDetailPage = () => {
 
 		checkIfAlreadyApplied();
 	}, [user, shopId, noticeId]);
+
+	useEffect(() => {
+		if (recentShops.length === 0) return;
+
+		const updateNoticeBoard = async () => {
+			const res = await fetchNoticeList({ offset: 0, limit: 100 });
+			const allNotices = res.items.map(({ item }) => ({ ...item, closed: isClosed(item) }));
+			const filteredNotices = allNotices.filter(notice => recentShops.includes(String(notice.id)));
+
+			setNewlyNotices(filteredNotices);
+		};
+
+		updateNoticeBoard();
+	}, [recentShops]);
 
 	useEffect(() => {
 		const shopIds = getRecentShops();
