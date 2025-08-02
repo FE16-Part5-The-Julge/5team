@@ -2,12 +2,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import axiosInstance from '@/api/settings/axiosInstance';
 import { jwtDecode } from 'jwt-decode';
 import { useRouter } from 'next/router';
-import { Shop } from '@/types/shop';
-
-interface ShopItem {
-	item: Shop;
-	href: string;
-}
+import { ShopWrapper } from '@/types/shop';
 
 interface User {
 	id: string;
@@ -17,7 +12,7 @@ interface User {
 	phone?: string;
 	address?: string;
 	bio?: string;
-	shop?: ShopItem | null;
+	shop?: ShopWrapper | null;
 }
 
 interface UserContextType {

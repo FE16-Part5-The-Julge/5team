@@ -43,21 +43,31 @@ export const registerShop = async (shopData: ReqShop): Promise<ResShop | string>
 	}
 };
 
-export const editShop = async (shopData: ReqShop): Promise<ResShop | string> => {
+export const editShop = async (shopData: ReqShop, shopId): Promise<ResShop | string> => {
 	try {
-		const res = await axiosInstance.put('/shops', shopData, {
+		const res = await axiosInstance.put(`/shops/${shopId}`, shopData, {
 			headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
 		});
 
 		return res.data;
 	} catch (err: unknown) {
 		const error = err as AxiosError;
-		console.log(error);
 		if (error.status === 401 || error.status === 403 || error.status === 404) {
-			const errorMessage = error.message;
+			let errorMessage: string;
+			switch (error.status) {
+				case 401:
+					errorMessage = '로그인이 필요합니다';
+					break;
+				case 403:
+					errorMessage = '가게를 수정할 권한이 없습니다';
+					break;
+				case 404:
+					errorMessage = '존재하지 않는 가게입니다';
+			}
+
 			throw {
 				status: error.status,
-				message: errorMessage || `${error.status} 오류가 발생했습니다.`,
+				message: errorMessage,
 			};
 		} else {
 			throw { status: error.response?.status || 500, message: '알 수 없는 오류가 발생했습니다.' };

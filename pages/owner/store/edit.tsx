@@ -13,9 +13,8 @@ import Alert from '@/components/Modal/Alert/Alert';
 import Confirm from '@/components/Modal/Confirm/Confirm';
 import { useRouter } from 'next/router';
 import { Shop } from '@/types/shop';
-import axiosInstance from '@/api/settings/axiosInstance';
-import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import { useUserContext } from '@/contexts/auth-context';
+import Image from 'next/image';
 
 interface FormInputs {
 	name: string;
@@ -27,74 +26,62 @@ interface FormInputs {
 	originalHourlyPay: number;
 }
 
-export const getServerSideProps: GetServerSideProps<{ myShop: Shop | null }> = async (
-	context: GetServerSidePropsContext
-) => {
-	// TODO: shopId 어떻게 가져올 것인지?
-	// const shopId = context.params?.['id'];
-	const shopId = '0923d454-5b69-4efc-a91d-0def6470682e';
-	let myShop: Shop | null = null;
-	try {
-		const res = await axiosInstance.get(`/shops/${shopId}`);
-		myShop = res.data.item;
-	} catch {
-		return {
-			redirect: {
-				//TODO: 가게 상세 페이지로 이동
-				destination: '/',
-				permanent: false,
-			},
-		};
-	}
-
-	return {
-		props: {
-			myShop,
-		},
-	};
-};
-
-const Edit = ({ myShop }: { myShop: Shop }) => {
+const Edit = () => {
 	const { user } = useUserContext();
 	const resultModal = useModal();
 	const errorModal = useModal();
 	const [errorMessage, setErrorMessage] = useState<string>('');
 	const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 	const router = useRouter();
+	const [myShop, setMyShop] = useState<Shop | null>(null);
 	const [shopId, setShopId] = useState<string | null>(null);
 
-	console.log(user);
+	useEffect(() => {
+		if (user && user.shop) {
+			setMyShop(user.shop.item);
+			setShopId(user.shop.item.id);
+		}
+	}, [user]);
+
 	const {
 		handleSubmit,
 		control,
-		formState: { isValid },
+		formState: { isValid, isDirty },
+		reset,
 	} = useForm<FormInputs>({
 		mode: 'onChange',
 		defaultValues: {
-			name: myShop.name,
-			category: myShop.category,
-			address1: myShop.address1,
-			address2: myShop.address2,
-			description: myShop.description,
-			imageUrl: myShop.imageUrl,
-			originalHourlyPay: myShop.originalHourlyPay,
+			name: '',
+			category: '',
+			address1: '',
+			address2: '',
+			description: '',
+			imageUrl: '',
+			originalHourlyPay: 0,
 		},
 	});
-	// const [shopId, setShopId] = useState<string | null>(null);
+
+	useEffect(() => {
+		if (myShop) {
+			reset({
+				name: myShop.name ?? '',
+				category: myShop.category ?? '',
+				address1: myShop.address1 ?? '',
+				address2: myShop.address2 ?? '',
+				description: myShop.description ?? '',
+				imageUrl: myShop.imageUrl ?? '',
+				originalHourlyPay: myShop.originalHourlyPay ?? 0,
+			});
+		}
+	}, [myShop, reset]);
 
 	const onSubmit = async (data: FormInputs) => {
 		setIsSubmitting(true);
 		try {
 			const shopData = { ...data };
-			// console.log('Submitting shop data:', shopData);
-			const res = await editShop(shopData);
-			// console.log('Edit shop response:', res);
-			if (typeof res === 'object' && 'item' in res) {
-				setShopId(res.item.id);
-			}
+			await editShop(shopData, shopId);
 			resultModal.openModal();
 		} catch (error: unknown) {
-			// console.error('Submit error:', error);
 			const err = error as { status: number; message: string };
 			if (err.status === 401 || err.status === 403 || err.status === 404) {
 				setErrorMessage(err.message);
@@ -110,7 +97,12 @@ const Edit = ({ myShop }: { myShop: Shop }) => {
 
 	return (
 		<div className={styles.container}>
-			<h1 className={styles.title}>가게 정보</h1>
+			<div className={styles.header}>
+				<h1 className={styles.title}>가게 정보</h1>
+				<button onClick={() => router.back()}>
+					<Image src="/img/icon/closeIcon.svg" alt="가게 편집 닫기" width={32} height={32} />
+				</button>
+			</div>
 			<form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
 				<div className={styles.formSection}>
 					<div className={styles.formRow}>
@@ -234,9 +226,9 @@ const Edit = ({ myShop }: { myShop: Shop }) => {
 				<button
 					type="submit"
 					className={`${styles.button} ${buttonStyles.button} ${buttonStyles.red} ${
-						isSubmitting || !isValid ? buttonStyles.disabled : ''
+						isSubmitting || !isValid || !isDirty ? buttonStyles.disabled : ''
 					}`}
-					disabled={isSubmitting || !isValid}
+					disabled={isSubmitting || !isValid || !isDirty}
 				>
 					완료하기
 				</button>
@@ -245,7 +237,7 @@ const Edit = ({ myShop }: { myShop: Shop }) => {
 				message: '수정이 완료되었습니다.',
 				onConfirm: () => {
 					resultModal.closeModal();
-					router.push(`/owner/store/${shopId}`);
+					router.push(`/owner/store`);
 				},
 			})}
 			{errorModal.renderModal(Confirm, {

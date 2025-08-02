@@ -7,11 +7,9 @@ import {
 } from '@tanstack/react-table';
 import styles from './VolunteerListTable.module.css';
 import axiosInstance from '@/api/settings/axiosInstance';
-import { updateApplication } from '@/api/applications/updateApplication';
 
 interface Applicant {
 	id: string;
-	applyid: string;
 	name?: string;
 	phone?: string;
 	bio?: string;
@@ -23,76 +21,6 @@ interface VolunteerListTableProps {
 	shopId: string;
 	noticeId: string;
 }
-
-// Static column definitions moved outside the component
-const baseColumns = (shopId: string, noticeId: string) => [
-	{
-		accessorKey: 'name',
-		header: '신청자',
-		meta: { responsive: 'mobile' },
-		cell: (info: any) => info.getValue(),
-	},
-	{
-		accessorKey: 'bio',
-		header: '소개',
-		meta: { responsive: 'tablet' },
-		cell: (info: any) => info.getValue() || '-',
-	},
-	{
-		accessorKey: 'phone',
-		header: '전화번호',
-		meta: { responsive: 'desktop' },
-		cell: (info: any) => info.getValue() || '-',
-	},
-	{
-		id: 'actions',
-		header: '상태',
-		meta: { responsive: 'mobile' },
-		cell: ({ row }: any) => {
-			const { applyid, status } = row.original;
-			const [loading, setLoading] = useState(false);
-			const [localStatus, setLocalStatus] = useState(status);
-
-			const onClickStatusChange = async (newStatus: 'accepted' | 'rejected') => {
-				setLoading(true);
-				try {
-					await updateApplication(shopId, noticeId, applyid, newStatus);
-					setLocalStatus(newStatus);
-				} catch (e) {
-					alert('상태 변경 실패: ' + e);
-				} finally {
-					setLoading(false);
-				}
-			};
-
-			if (localStatus === 'accepted') {
-				return <span className={styles.statusAccepted}>승인완료</span>;
-			}
-			if (localStatus === 'rejected') {
-				return <span className={styles.statusRejected}>거절됨</span>;
-			}
-
-			return (
-				<div className={styles.actions}>
-					<button
-						className={styles.refuse}
-						disabled={loading}
-						onClick={() => onClickStatusChange('rejected')}
-					>
-						거절하기
-					</button>
-					<button
-						className={styles.admit}
-						disabled={loading}
-						onClick={() => onClickStatusChange('accepted')}
-					>
-						승인하기
-					</button>
-				</div>
-			);
-		},
-	},
-];
 
 async function fetchApplicants(shopId: string, noticeId: string, offset: number, limit: number) {
 	const res = await axiosInstance.get(`shops/${shopId}/notices/${noticeId}/applications`, {
@@ -119,6 +47,38 @@ function useDeviceType(): 'mobile' | 'tablet' | 'desktop' {
 	return deviceType;
 }
 
+const baseColumns: any[] = [
+	{
+		accessorKey: 'name',
+		header: '신청자',
+		meta: { responsive: 'mobile' },
+		cell: (info: any) => info.getValue(),
+	},
+	{
+		accessorKey: 'bio',
+		header: '소개',
+		meta: { responsive: 'tablet' },
+		cell: (info: any) => info.getValue() || '-',
+	},
+	{
+		accessorKey: 'phone',
+		header: '전화번호',
+		meta: { responsive: 'desktop' },
+		cell: (info: any) => info.getValue() || '-',
+	},
+	{
+		id: 'actions',
+		header: '상태',
+		meta: { responsive: 'mobile' },
+		cell: () => (
+			<div className={styles.actions}>
+				<button className={styles.refuse}>거절하기</button>
+				<button className={styles.admit}>승인하기</button>
+			</div>
+		),
+	},
+];
+
 const VolunteerListTable = ({ shopId, noticeId }: VolunteerListTableProps) => {
 	const [applications, setApplicants] = useState<Applicant[]>([]);
 	const [offset, setOffset] = useState(0);
@@ -126,16 +86,14 @@ const VolunteerListTable = ({ shopId, noticeId }: VolunteerListTableProps) => {
 	const limit = 5;
 	const deviceType = useDeviceType();
 
-	const columns = useMemo(() => baseColumns(shopId, noticeId), [shopId, noticeId]);
-
 	const filteredColumns = useMemo(() => {
-		return columns.filter(col => {
+		return baseColumns.filter(col => {
 			const responsive = col.meta?.responsive ?? 'desktop';
 			if (deviceType === 'mobile') return ['mobile'].includes(responsive);
 			if (deviceType === 'tablet') return ['mobile', 'tablet'].includes(responsive);
 			return true;
 		});
-	}, [deviceType, columns]);
+	}, [deviceType]);
 
 	useEffect(() => {
 		if (!shopId || !noticeId) return;
@@ -148,6 +106,7 @@ const VolunteerListTable = ({ shopId, noticeId }: VolunteerListTableProps) => {
 				}
 				const mapped = res.items.map((application: any) => {
 					const user = application.item.user?.item;
+
 					return {
 						id: application.item.id,
 						applyid: application.id,
@@ -156,8 +115,6 @@ const VolunteerListTable = ({ shopId, noticeId }: VolunteerListTableProps) => {
 						bio: user?.bio ?? '자기소개 없음',
 						status: application.item.status,
 						createdAt: application.item.createdAt,
-						shopId,
-						noticeId,
 					};
 				});
 				setApplicants(mapped);
@@ -215,9 +172,7 @@ const VolunteerListTable = ({ shopId, noticeId }: VolunteerListTableProps) => {
 				>
 					&lt;
 				</button>
-				<button onClick={() => setOffset(prev => prev + limit)} disabled={!hasNext}>
-					&gt;
-				</button>
+				<button onClick={() => setOffset(prev => prev + limit)} disabled={!hasNext}></button>
 			</div>
 		</div>
 	);

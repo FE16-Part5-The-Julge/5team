@@ -3,7 +3,6 @@ import Alert from '@/components/Modal/Alert/Alert';
 import Confirm from '@/components/Modal/Confirm/Confirm';
 import Action from '@/components/Modal/Action/Action';
 import useModal from '@/hooks/useModal';
-import { useState } from 'react';
 import Notification from '@/components/Modal/Notification/Notification';
 import { MyNotification as MyNotificationType } from '@/types/notification';
 
@@ -12,7 +11,7 @@ export default function Test() {
 	const actModal = useModal();
 	const confirmModal = useModal();
 	const notificationModal = useModal();
-	// const [notifications, setNotifications] = useState<Notification[]>([]);
+
 	const notifications: MyNotificationType[] = [
 		{
 			id: 1,

@@ -14,11 +14,14 @@ export default function Layout({ children }: LayoutProps) {
 		return <main className={styles.main}>{children}</main>;
 	}
 
+	const noFooter = ['/owner/store/create', '/owner/store/edit'];
+	const isFooterHidden = noFooter.includes(router.pathname);
+
 	return (
 		<>
 			<Header />
 			<main className={styles.main}>{children}</main>
-			<Footer />
+			{!isFooterHidden && <Footer />}
 		</>
 	);
 }

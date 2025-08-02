@@ -12,6 +12,7 @@ import SmartPhoneIcon from '@/assets/img/smartPhoneIcon.svg';
 
 //Components
 import { BaseButton } from '@/components/common/BaseButton/index';
+import buttonStyle from '@/components/common/BaseButton/BaseButton.module.css';
 
 //api
 import { getUser } from '@/api/users/getUser';
@@ -73,11 +74,10 @@ export default function ProfilePage() {
 		}
 	}, [userData]);
 
-	//****************** 중요한거 아님 */
-	useEffect(() => {
+	/*	useEffect(() => {
 		console.log(userAppData);
 	}, [userAppData]);
-	///////////////////////////////////////////
+	*/
 
 	const handleClickPost = () => {
 		router.push('/posts');
@@ -149,9 +149,12 @@ export default function ProfilePage() {
 									아직 신청 내역이 없어요.
 								</div>
 								<div style={{ display: 'flex', justifyContent: 'center' }}>
-									<BaseButton size="large" onClick={handleClickPost} color="red">
+									<button
+										className={`${styles.button} ${buttonStyle.button} ${buttonStyle.red}`}
+										onClick={handleClickPost}
+									>
 										공고 보러가기
-									</BaseButton>
+									</button>
 								</div>
 							</div>
 						)}
@@ -168,9 +171,12 @@ export default function ProfilePage() {
 								내 프로필을 등록하고 원하는 가게에 지원해 보세요.
 							</div>
 							<div style={{ display: 'flex', justifyContent: 'center' }}>
-								<BaseButton size="large" onClick={handleClickEdit} color="red">
+								<button
+									className={`${styles.buttonRegist} ${buttonStyle.button} ${buttonStyle.red}`}
+									onClick={handleClickEdit}
+								>
 									내 프로필 등록하기
-								</BaseButton>
+								</button>
 							</div>
 						</div>
 					</div>

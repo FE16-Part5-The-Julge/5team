@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { Dispatch, SetStateAction } from 'react';
 import styles from './DetailFilter.module.css';
 import buttonStyles from '@/components/common/BaseButton/BaseButton.module.css';
 
@@ -6,21 +7,17 @@ import { TextInput } from '@/components/common/inputs/TextInput';
 import { NumberInput } from '@/components/common/inputs/NumberInput';
 import { DROPDOWN_OPTIONS_MAP } from '@/constants/DropdownOptions';
 
+interface DetailFilterState {
+	startsAtGte: string;
+	hourlyPayGte: string;
+	selectedAddress: string | null;
+}
+
 interface DetailFilterProps {
 	onClose: () => void;
-	onApply: (detailFilterCount: number) => void;
-	detailFilterState: {
-		startsAtGte: string;
-		hourlyPayGte: string;
-		selectedAddresses: string[];
-	};
-	setDetailFilterState: React.Dispatch<
-		React.SetStateAction<{
-			startsAtGte: string;
-			hourlyPayGte: string;
-			selectedAddresses: string[];
-		}>
-	>;
+	onApply: (newFilterState: DetailFilterState) => void;
+	detailFilterState: DetailFilterState;
+	setDetailFilterState: Dispatch<SetStateAction<DetailFilterState>>;
 }
 
 const DetailFilter = ({
@@ -29,35 +26,34 @@ const DetailFilter = ({
 	detailFilterState,
 	setDetailFilterState,
 }: DetailFilterProps) => {
-	const { startsAtGte, hourlyPayGte, selectedAddresses } = detailFilterState;
+	const { startsAtGte, hourlyPayGte, selectedAddress } = detailFilterState;
 	const options = DROPDOWN_OPTIONS_MAP['주소'];
 
 	const handleAddressClick = (address: string) => {
-		if (!selectedAddresses.includes(address)) {
-			setDetailFilterState(prev => ({
-				...prev,
-				selectedAddresses: [...prev.selectedAddresses, address],
-			}));
-		}
-	};
-
-	const handleRemoveAddress = (address: string) => {
+		// 기존 주소와 같으면 null로 초기화, 다르면 새로 선택
 		setDetailFilterState(prev => ({
 			...prev,
-			selectedAddresses: prev.selectedAddresses.filter(item => item !== address),
+			selectedAddress: prev.selectedAddress === address ? null : address,
+		}));
+	};
+
+	const handleRemoveAddress = () => {
+		setDetailFilterState(prev => ({
+			...prev,
+			selectedAddress: null,
 		}));
 	};
 
 	const handleReset = () => {
-		setDetailFilterState({ startsAtGte: '', hourlyPayGte: '', selectedAddresses: [] });
+		setDetailFilterState({ startsAtGte: '', hourlyPayGte: '', selectedAddress: null });
 	};
 
 	const handleApply = () => {
-		let count = selectedAddresses.length;
+		let count = selectedAddress ? 1 : 0;
 		if (startsAtGte.trim() !== '') count += 1;
 		if (hourlyPayGte.trim() !== '') count += 1;
 
-		onApply(count);
+		onApply(detailFilterState);
 		onClose();
 	};
 
@@ -89,14 +85,19 @@ const DetailFilter = ({
 						</div>
 
 						<div className={styles.selected}>
-							{selectedAddresses.map((address, idx) => (
-								<div key={idx} className={styles.selectedItem}>
-									<span>{address}</span>
-									<div className={styles.close} onClick={() => handleRemoveAddress(address)}>
-										<img src="/img/icon/closeIcon.svg" alt="주소선택 취소" />
+							{selectedAddress && (
+								<div className={styles.selectedItem}>
+									<span>{selectedAddress}</span>
+									<div className={styles.close} onClick={handleRemoveAddress}>
+										<Image
+											src="/img/icon/closeIcon.svg"
+											alt="주소선택 취소"
+											width={20}
+											height={20}
+										/>
 									</div>
 								</div>
-							))}
+							)}
 						</div>
 					</div>
 

@@ -87,7 +87,7 @@ export default function Header() {
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
 		if (!inputValue.trim()) return;
-		router.push(`/employee/posts?search=${encodeURIComponent(inputValue.trim())}`);
+		router.push(`/posts?search=${encodeURIComponent(inputValue.trim())}`);
 	};
 
 	return (

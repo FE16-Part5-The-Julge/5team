@@ -68,15 +68,13 @@ const PostDetailPage = () => {
 					recentShops.includes(String(notice.id))
 				);
 
-				const listRes = await fetchNoticeList({ offset: 0, limit: 6 });
-
 				if (!noticeItem || !shopItem) throw new Error('데이터 없음');
 
 				setNotice({ ...noticeItem, closed: isClosed(noticeItem) });
 				setShop(shopItem);
 				//setNewlyNotices(listRes.items.map(({ item }) => ({ ...item, closed: isClosed(item) })));
 				setNewlyNotices(filteredNotices);
-			} catch (err) {
+			} catch {
 				setAlertMessage('페이지 정보를 불러오지 못했습니다.');
 				setIsConfirmOpen(true);
 			} finally {
@@ -89,7 +87,7 @@ const PostDetailPage = () => {
 		if (noticeId) {
 			saveRecentShops(noticeId);
 		}
-	}, [shopId, noticeId]);
+	}, [shopId, noticeId, recentShops]);
 
 	// 로컬스토리지 확인해서 사장님이면 리다이렉트 처리
 	useEffect(() => {
@@ -128,10 +126,6 @@ const PostDetailPage = () => {
 		setRecentShops(shopIds);
 	}, []);
 
-	useEffect(() => {
-		console.log(recentShops);
-	}, [recentShops]);
-
 	if (isLoading) return null;
 	if (!notice || !shop) return <p>존재하지 않는 공고입니다.</p>;
 
@@ -163,7 +157,7 @@ const PostDetailPage = () => {
 				setApplicationId(newApplicationId);
 				setIsApplied(true);
 			}
-		} catch (err) {
+		} catch {
 			setAlertMessage('프로필 정보를 불러오지 못했거나, 신청 처리에 실패했습니다.');
 			setIsConfirmOpen(true);
 		}
@@ -179,7 +173,7 @@ const PostDetailPage = () => {
 			if (!applicationId) throw new Error('지원 id 없음');
 			await updateApplication(shop.id, notice.id, applicationId, 'canceled');
 			setIsApplied(false);
-		} catch (err) {
+		} catch {
 			setAlertMessage('신청 취소 처리에 실패했습니다.');
 			setIsConfirmOpen(true);
 		} finally {
@@ -220,7 +214,7 @@ const PostDetailPage = () => {
 					message={alertMessage}
 					isOpen={isConfirmOpen}
 					onClose={() => setIsConfirmOpen(false)}
-					onConfirm={() => setIsConfirmOpen(false)}
+					onConfirm={() => router.push('/employee/profile/create')}
 				/>
 			)}
 			{isActionOpen && (

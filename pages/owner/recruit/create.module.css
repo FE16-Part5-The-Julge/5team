@@ -1,0 +1,9 @@
+.title {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.myCustomButton {
+	height: 70px;
+}
