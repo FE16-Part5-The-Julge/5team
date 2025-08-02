@@ -143,10 +143,14 @@
 	.houlyPayBadge {
 		padding: 12px;
 		color: #ffffff;
-		background-color: #ff4040;
+		background-color: var(--primary);
 		font-size: 14px;
 		font-weight: 700;
 		border-radius: 20px;
+	}
+
+	.upArrowIcon {
+		fill: #ffffff;
 	}
 }
 
@@ -186,9 +190,13 @@
 	.houlyPayBadge {
 		padding: 12px;
 		color: #ffffff;
-		background-color: #ff4040;
+		background-color: var(--primary);
 		font-size: 14px;
 		font-weight: 700;
 		border-radius: 20px;
+	}
+
+	.upArrowIcon {
+		fill: #ffffff;
 	}
 }

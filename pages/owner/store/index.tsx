@@ -74,49 +74,53 @@ export default function StorePage() {
 				) : (
 					<div className={styles.emptyShop}>
 						<p className={styles.emptyDescription}>내 가게를 소개하고 공고도 등록해 보세요.</p>
-						<BaseButton
-							onClick={() => router.push('/owner/store/create')}
-							size={'medium'}
-							color={'red'}
-						>
-							가게 등록하기
-						</BaseButton>
+						<div className={styles.buttonGroup}>
+							<BaseButton
+								onClick={() => router.push('/owner/store/create')}
+								size={'noneSize'}
+								color={'red'}
+							>
+								가게 등록하기
+							</BaseButton>
+						</div>
 					</div>
 				)}
 			</div>
 
 			{/* 공고 리스트 영역 */}
-			<div className={styles.storeListContainer}>
-				<h2 className={styles.subtitle}>내가 등록한 공고</h2>
-				<div className={styles.noticeList}>
-					{notices.length > 0 ? (
-						notices.map(notice => {
-							const closed = isClosed(notice);
-							return (
-								<div
-									key={notice.id}
-									className={styles.noticeItem}
-									onClick={() => !closed && router.push(`/owner/recruit/${shop.id}/${notice.id}`)}
-									aria-disabled={closed}
+			{shop && (
+				<div className={styles.storeListContainer}>
+					<h2 className={styles.subtitle}>내가 등록한 공고</h2>
+					<div className={styles.noticeList}>
+						{notices.length > 0 ? (
+							notices.map(notice => {
+								const closed = isClosed(notice);
+								return (
+									<div
+										key={notice.id}
+										className={styles.noticeItem}
+										onClick={() => !closed && router.push(`/owner/recruit/${shop.id}/${notice.id}`)}
+										aria-disabled={closed}
+									>
+										<SmallNoticePoastCard notice={{ ...notice, closed }} />
+									</div>
+								);
+							})
+						) : (
+							<div className={styles.emptyShop}>
+								<p className={styles.emptyDescription}>공고를 등록해 보세요.</p>
+								<BaseButton
+									onClick={() => router.push('/owner/recruit/create')}
+									size={'medium'}
+									color={'red'}
 								>
-									<SmallNoticePoastCard notice={{ ...notice, closed }} />
-								</div>
-							);
-						})
-					) : (
-						<div className={styles.emptyShop}>
-							<p className={styles.emptyDescription}>공고를 등록해 보세요.</p>
-							<BaseButton
-								onClick={() => router.push('/owner/recruit/create')}
-								size={'medium'}
-								color={'red'}
-							>
-								공고 등록하기
-							</BaseButton>
-						</div>
-					)}
+									공고 등록하기
+								</BaseButton>
+							</div>
+						)}
+					</div>
 				</div>
-			</div>
+			)}
 		</div>
 	);
 }

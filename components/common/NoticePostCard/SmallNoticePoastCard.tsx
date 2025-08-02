@@ -4,15 +4,23 @@ import { formatNoticeTimes } from '@/utils/dayformatting';
 import TimeIcon from '@/assets/img/timeIcon.svg';
 import PathIcon from '@/assets/img/pathIcon.svg';
 import UpArrowIcon from '@/assets/img/upArrowIcon';
+import { useRouter } from 'next/router';
 
 type Props = {
 	notice: NoticeItem;
-	onClick?: () => void;
 };
 
-const SmallNoticePoastCard = ({ notice, onClick }: Props) => {
+// notice prop에는 2개의 API(getShopId, getNoticeList)가 있음. -> 카드에 필요한 내용이 getNoticeList안에 담겨있질 않아 getShopId 병렬 요청. /owner/store 76~94라인 참고
+// cookie에 관해서는 아직 명확한 바가 없어서 user_id, shop_id는 하드코딩으로 테스트 해야함.
+
+const SmallNoticePoastCard = ({ notice }: Props) => {
+	const router = useRouter();
 	const isClosed = notice.closed;
 	const timeText = formatNoticeTimes(notice);
+
+	const handleClick = () => {
+		router.push(`/owner/recruit/${notice.id}`);
+	};
 
 	// 시급 계산
 	const hourlyPay = notice?.hourlyPay;
@@ -21,7 +29,7 @@ const SmallNoticePoastCard = ({ notice, onClick }: Props) => {
 		hourlyPay && originalPay ? Math.round(((hourlyPay - originalPay) / originalPay) * 100) : null;
 
 	return (
-		<div onClick={onClick} className={`${styles.container} ${isClosed ? styles.closed : ''}`}>
+		<div onClick={handleClick} className={`${styles.container} ${isClosed ? styles.closed : ''}`}>
 			<ul className={styles.JobPostCard}>
 				<li className={styles.imageUrl}>
 					<div className={styles.imageWrapper}>
@@ -43,7 +51,7 @@ const SmallNoticePoastCard = ({ notice, onClick }: Props) => {
 					{!isClosed && (
 						<li className={styles.houlyPayBadge}>
 							기존 시급보다 {percentIncrease}%
-							<UpArrowIcon color="#ff4040" />
+							<UpArrowIcon className={styles.upArrowIcon} />
 						</li>
 					)}
 				</div>
