@@ -4,12 +4,12 @@ import { useEffect, useState } from 'react';
 import styles from './postDetail.module.css';
 import btnStyles from '@/components/common/BaseButton/BaseButton.module.css';
 
-import { getNoticeId } from '@/api/getNoticeId';
-import { getShopById } from '@/api/users/getShopById';
-import { fetchNoticeList } from '@/api/users/getNotice';
+import { getNoticeId } from '@/api/employerNotice';
+import { getShopById } from '@/api/usersInfo';
+import { fetchNoticeList } from '@/api/usersInfo';
 import { applyNotice } from '@/api/applications/applyNotice';
 import { updateApplication } from '@/api/applications/updateApplication';
-import { getUser } from '@/api/users/getUser';
+import { getUser } from '@/api/usersInfo';
 
 import { Notice } from '@/types/userNotice';
 import { Shop } from '@/types';

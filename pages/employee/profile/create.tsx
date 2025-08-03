@@ -6,8 +6,8 @@ import { TextInput } from '@/components/common/inputs/TextInput';
 import { DropdownInput } from '@/components/common/inputs/DropdownInput';
 import { TextareaInput } from '@/components/common/inputs/TextareaInput';
 import Alert from '@/components/Modal/Alert/Alert';
-import { getUser } from '@/api/users/getUser';
-import { updateUser } from '@/api/users/updateUser';
+import { getUser } from '@/api/usersInfo';
+import { updateUser } from '@/api/usersInfo';
 
 import buttonStyle from '@/components/common/BaseButton/BaseButton.module.css';
 import styles from './create.module.css';

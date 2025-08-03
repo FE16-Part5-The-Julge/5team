@@ -6,9 +6,9 @@ import { useEffect, useState } from 'react';
 import { TextareaInput } from '@/components/common/inputs/TextareaInput';
 import CloseIcon from '@/assets/img/closeIcon.svg';
 import { BaseButton } from '@/components/common/BaseButton';
-import { getShopId } from '@/api/getShopId';
+import { getShopId } from '@/api/employerShop';
 import { useUserContext } from '@/contexts/auth-context';
-import { createNotice } from '@/api/createNotice';
+import { createNotice } from '@/api/employerNotice';
 import Alert from '@/components/Modal/Alert/Alert';
 import { useRouter } from 'next/router';
 
