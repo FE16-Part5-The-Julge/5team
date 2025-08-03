@@ -5,6 +5,10 @@ import TimeIcon from '@/assets/img/timeIcon.svg';
 import PathIcon from '@/assets/img/pathIcon.svg';
 import UpArrowIcon from '@/assets/img/upArrowIcon';
 
+const formatNumberWithCommas = (num: number): string => {
+	return num.toLocaleString('ko-KR');
+};
+
 interface NoticePostCardProps {
 	notice: NoticeItem;
 	children?: React.ReactNode;
@@ -31,11 +35,13 @@ const NoticePostCard = ({ notice, children }: NoticePostCardProps) => {
 				<div className={styles.responsiveDesign}>
 					<li className={styles.category}>시급</li>
 					<li className={styles.houlyPay}>
-						{notice?.hourlyPay}원
-						<span className={styles.houlyPayBadge}>
-							기존 시급보다 {percentIncrease}%
-							<UpArrowIcon color="#ffffff" />
-						</span>
+						{hourlyPay ? formatNumberWithCommas(hourlyPay) : 0}원
+						{typeof percentIncrease === 'number' && percentIncrease > 0 && (
+							<span className={styles.houlyPayBadge}>
+								기존 시급보다 {percentIncrease}%
+								<UpArrowIcon color="#ffffff" />
+							</span>
+						)}
 					</li>
 					<li className={styles.startsAt}>
 						<TimeIcon witdh={16} height={16} />

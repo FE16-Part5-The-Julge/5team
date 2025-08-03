@@ -40,7 +40,7 @@ const SmallNoticePoastCard = ({ notice, onClick }: Props) => {
 				</li>
 				<div className={styles.responsiveDesign}>
 					<li className={styles.houlyPay}>{notice?.hourlyPay.toLocaleString()}원</li>
-					{!isClosed && (
+					{!isClosed && typeof percentIncrease === 'number' && percentIncrease > 0 && (
 						<li className={styles.houlyPayBadge}>
 							기존 시급보다 {percentIncrease}%
 							<UpArrowIcon className={styles.upArrowIcon} />
