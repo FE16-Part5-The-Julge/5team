@@ -64,6 +64,10 @@
 	white-space: normal;
 }
 
+.postdescription::-webkit-scrollbar {
+	display: none;
+}
+
 .buttonGruop {
 	display: flex;
 	gap: 8px;
@@ -128,7 +132,7 @@
 		width: 346px;
 		height: 308px;
 		justify-content: space-between;
-		padding: 16px 0;
+		padding-top: 16px;
 	}
 
 	.responsiveDesignContents {
