@@ -11,7 +11,6 @@ import { BaseButton } from '@/components/common/BaseButton';
 import { useUserContext } from '@/contexts/auth-context';
 import useModal from '@/hooks/useModal';
 import Alert from '@/components/Modal/Alert/Alert';
-import { ShopWrapper } from '@/types';
 
 export default function Login() {
 	const router = useRouter();
