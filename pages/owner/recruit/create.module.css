@@ -64,6 +64,11 @@
 		margin: 0 auto;
 		width: 312px;
 	}
+
+	.title {
+		font-size: 28px;
+		font-weight: 700;
+	}
 }
 
 @media (min-width: 1024px) {
