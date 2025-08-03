@@ -7,7 +7,7 @@ import { NumberInput } from '@/components/common/inputs/NumberInput';
 import { ImageInput } from '@/components/common/inputs/ImageInput';
 import { TextareaInput } from '@/components/common/inputs/TextareaInput';
 import { useState, useEffect } from 'react';
-import { editShop } from '@/api/saveShop';
+import { editShop } from '@/api/employerShop';
 import useModal from '@/hooks/useModal';
 import Alert from '@/components/Modal/Alert/Alert';
 import Confirm from '@/components/Modal/Confirm/Confirm';

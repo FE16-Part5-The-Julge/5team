@@ -4,8 +4,8 @@ import PostCard from '@/components/UI/PostCard';
 import SmallNoticePoastCard from '@/components/common/NoticePostCard/SmallNoticePoastCard';
 import { useRouter } from 'next/router';
 import { Shop, NoticeItem } from '@/types';
-import { getShopId } from '@/api/getShopId';
-import { getNoticeList } from '@/api/getNoticeList';
+import { getShopId } from '@/api/employerShop';
+import { getNoticeList } from '@/api/employerNotice';
 import { useEffect, useState } from 'react';
 import { useUserContext } from '@/contexts/auth-context';
 
