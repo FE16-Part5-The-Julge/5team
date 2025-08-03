@@ -5,10 +5,6 @@
 	padding-left: 238px;
 }
 
-.main.gray-pages {
-	background-color: var(--gray5);
-}
-
 @media screen and (max-width: 1023px) {
 	.main {
 		padding-right: 32px;
