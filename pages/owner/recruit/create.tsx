@@ -154,7 +154,7 @@ export default function CreateNotice() {
 						error={!form.workhour ? '시간을 입력해주세요' : ''}
 					/>
 					<div />
-					<div className="myCustomTextareaWrapper">
+					<div className={styles.myCustomTextareaWrapper}>
 						<TextareaInput
 							id="description"
 							label="공고 설명"

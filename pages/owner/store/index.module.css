@@ -1,4 +1,14 @@
-.shopContainer {
+.storeContainer {
+	display: flex;
+	flex-direction: column;
+	gap: 100px;
+	max-width: 964px;
+	margin: 0 auto;
+	padding-top: 60px;
+}
+
+.shopContainer,
+.storeListContainer {
 	width: 100%;
 }
 
@@ -11,6 +21,8 @@
 	height: 195px;
 	border: 1px solid #e5e4e7;
 	border-radius: 12px;
+	width: 100%;
+	grid-column: 1 / -1;
 }
 
 .title {
@@ -28,35 +40,34 @@
 	text-align: center;
 }
 
-.buttonGroup {
-	display: flex;
-	width: 108px;
-	height: 37px;
-}
-
-.storeListContainer {
-	margin: 60px 0;
-}
-
 .subtitle {
 	font-size: 20px;
 	font-weight: 700;
 	color: #111322;
-	margin-left: 12px;
 }
 
 .noticeList {
-	margin: 16px 12px 0;
+	margin-top: 16px;
 	display: grid;
 	grid-template-columns: repeat(2, 1fr);
 	column-gap: 9px;
 	row-gap: 16px;
 }
 
-@media (min-width: 768px) and (max-width: 1023px) {
-	.buttonGroup {
-		width: 346px;
-		height: 47px;
+.noticeButton,
+.shopButton {
+	padding: 10px 20px;
+}
+
+@media (min-width: 768px) {
+	.noticeButton,
+	.shopButton {
+		padding: 13px 136px;
+	}
+	.title,
+	.subtitle {
+		font-size: 28px;
+		font-weight: 700;
 	}
 }
 
@@ -65,23 +76,13 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		width: 964px;
-	}
-
-	.storeListContainer {
-		width: 964px;
 	}
 
 	.noticeList {
-		margin: 16px 12px 0;
+		margin-top: 16px;
 		display: grid;
 		grid-template-columns: repeat(3, 1fr);
 		column-gap: 9px;
 		row-gap: 16px;
-	}
-
-	.buttonGroup {
-		width: 346px;
-		height: 47px;
 	}
 }
