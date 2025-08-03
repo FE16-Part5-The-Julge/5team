@@ -97,6 +97,7 @@ export default function StorePage() {
 								const closed = isClosed(notice);
 								return (
 									<SmallNoticePoastCard
+										key={notice.id}
 										notice={{ ...notice, closed }}
 										onClick={() => !closed && router.push(`/owner/recruit/${shop.id}/${notice.id}`)}
 									/>
