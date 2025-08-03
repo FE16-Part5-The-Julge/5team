@@ -44,8 +44,11 @@
 .admit {
 	width: 92px;
 	height: 38px;
-	border-color: #ea3c12;
+	border: 1px solid #ea3c12;
+	border-radius: 6px;
 	color: #ea3c12;
+	font-weight: 700;
+	font-size: 14px;
 }
 
 .admit {
@@ -55,6 +58,27 @@
 	color: #0080ff;
 }
 
+.statusAccepted {
+	background-color: #d6eaff;
+	color: #0070f3;
+	padding: 6px 12px;
+	border-radius: 16px;
+	font-size: 0.875rem;
+	font-weight: 500;
+	display: inline-block;
+	width: fit-content;
+}
+
+.statusRejected {
+	padding: 6px 12px;
+	border-radius: 16px;
+	font-size: 0.875rem;
+	font-weight: 500;
+	display: inline-block;
+	width: fit-content;
+	background-color: #ffe2e2;
+	color: #ff4d4f;
+}
 /* 페이지네이션 */
 .pagination {
 	display: flex;
