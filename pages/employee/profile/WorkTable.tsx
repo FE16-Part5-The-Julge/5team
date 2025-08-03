@@ -80,7 +80,7 @@ function dateIncode(dateData: string, workTime: number) {
 
 	const end = start.add(workTime, 'hour');
 	const endFormat = end.format('HH:mm');
-	return `${startFormat}~${endFormat} ${workTime}시간`;
+	return `${startFormat}~${endFormat} (${workTime}시간)`;
 }
 
 function statusSetFunc(statusprop) {
@@ -118,7 +118,7 @@ export default function WorkTable(items) {
 				createdAt: application.item.createdAt,
 			};
 		});
-		console.log(mapped);
+		//console.log(mapped);
 		setWorkItems(mapped);
 	}, [items.items]);
 

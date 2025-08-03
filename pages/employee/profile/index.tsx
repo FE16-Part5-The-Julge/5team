@@ -63,7 +63,7 @@ export default function ProfilePage() {
 			}
 		};
 		fetchUserData();
-	}, []);
+	}, [user]);
 
 	useEffect(() => {
 		const check = userData?.name || false;
@@ -98,7 +98,7 @@ export default function ProfilePage() {
 	}
 
 	const applyList = userAppData?.items?.length > 0 ? userAppData.items : false;
-	console.log(applyList);
+	//console.log(applyList);
 
 	return (
 		<>

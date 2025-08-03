@@ -135,6 +135,13 @@ const PostDetailPage = () => {
 		setRecentShops(shopIds);
 	}, []);
 
+	const handleCardClick = (notice: Notice) => {
+		const shopId = notice.shop?.item?.id;
+		if (shopId) {
+			router.push(`/posts/${shopId}/${notice.id}`);
+		}
+	};
+
 	if (isLoading) return null;
 	if (!notice || !shop) return <p>존재하지 않는 공고입니다.</p>;
 
@@ -213,7 +220,7 @@ const PostDetailPage = () => {
 				<span className={styles.title}>최근에 본 공고</span>
 				<div className={styles.newlyPost}>
 					{newlyNotices.map((item, idx) => (
-						<SmallNoticePoastCard key={idx} notice={item} />
+						<SmallNoticePoastCard key={idx} notice={item} onClick={() => handleCardClick(item)} />
 					))}
 				</div>
 			</div>
