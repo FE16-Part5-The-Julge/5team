@@ -1,12 +1,12 @@
 const MAX_ITEMS = 6;
 
-export const saveRecentShops = shopId => {
+export const saveRecentShops = (shopId: string | string[]) => {
 	if (!shopId) return; //Exception Transaction
 
 	const storedData = localStorage.getItem('recent_shops');
 	let shops = storedData ? JSON.parse(storedData) : []; //json 문자열 -> 값
 
-	shops = shops.filter(id => id !== shopId);
+	shops = shops.filter((id: string | string[]) => id !== shopId);
 
 	shops.unshift(shopId);
 
