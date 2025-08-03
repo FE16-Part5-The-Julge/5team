@@ -19,6 +19,8 @@ export default function Register() {
 	const [error, setError] = useState<{ [key: string]: string }>({});
 	const [loading, setLoading] = useState(false);
 	const pwModal = useModal();
+	const okModal = useModal();
+	const reModal = useModal();
 
 	const validateEmail = () => {
 		if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -72,23 +74,24 @@ export default function Register() {
 			});
 
 			if (res.status === 201) {
-				alert('가입이 완료되었습니다.');
-				router.push('/login');
+				okModal.openModal();
+				setTimeout(() => {
+					router.push('/login');
+				}, 1500);
 			}
 		} catch (error: unknown) {
 			if (axios.isAxiosError(error)) {
 				const status = error.response?.status;
-				const message = error.response?.data?.message;
 
 				if (status === 400) {
-					alert(message || '요청 형식이 올바르지 않습니다.');
+					reModal.openModal();
 				} else if (status === 409) {
 					pwModal.openModal();
 				} else {
-					alert('회원가입 중 문제가 발생했습니다.');
+					reModal.openModal();
 				}
 			} else {
-				alert('알 수 없는 오류가 발생했습니다.');
+				reModal.openModal();
 			}
 		} finally {
 			setLoading(false);
@@ -104,6 +107,10 @@ export default function Register() {
 			{pwModal.renderModal(Alert, {
 				message: '이미 사용중인 이메일 입니다',
 				onConfirm: pwModal.closeModal,
+			})}
+			{okModal.renderModal(Alert, {
+				message: ' 가입이 완료되었습니다',
+				onConfirm: okModal.closeModal,
 			})}
 			<div className={styles.imgcontainer}>
 				<button onClick={handleClickLogoImage}>
