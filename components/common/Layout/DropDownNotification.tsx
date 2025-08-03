@@ -106,7 +106,7 @@ export default function DropDownMenu() {
 				<Notification id={styles.icon} />
 			</button>
 
-			{dropdownVisible && userAlertData.length > 0 && (
+			{dropdownVisible && (
 				<NotificationCard notifications={userAlertData} onClose={toggleDropdown} />
 			)}
 		</>
