@@ -14,6 +14,7 @@
 	border-radius: 20px;
 	background-color: #ffffff;
 	border: 1px solid #e5e4e7;
+	margin-top: 16px;
 }
 
 .imageUrl {
@@ -113,6 +114,7 @@
 	border-radius: 12px;
 	background-color: #f2f2f3;
 	padding: 20px;
+	margin-top: 16px;
 }
 
 .noticeLabel {
@@ -152,6 +154,11 @@
 
 	.imageUrl {
 		height: 360px;
+	}
+
+	.JopPostCard,
+	.descriptionContainer {
+		margin-top: 16px;
 	}
 }
 
