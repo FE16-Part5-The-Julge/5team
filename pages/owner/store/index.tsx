@@ -96,14 +96,10 @@ export default function StorePage() {
 							notices.map(notice => {
 								const closed = isClosed(notice);
 								return (
-									<div
-										key={notice.id}
-										className={styles.noticeItem}
+									<SmallNoticePoastCard
+										notice={{ ...notice, closed }}
 										onClick={() => !closed && router.push(`/owner/recruit/${shop.id}/${notice.id}`)}
-										aria-disabled={closed}
-									>
-										<SmallNoticePoastCard notice={{ ...notice, closed }} />
-									</div>
+									/>
 								);
 							})
 						) : (
