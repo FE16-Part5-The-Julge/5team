@@ -6,6 +6,7 @@ import {
 	flexRender,
 } from '@tanstack/react-table';
 import styles from './WorkTable.module.css';
+import dayjs from 'dayjs';
 
 type WorkItem = {
 	store: string;
@@ -71,126 +72,55 @@ const baseColumns: any[] = [
 	},
 ];
 
-const data: WorkItem[] = [
-	{
-		store: 'HS 과일주스',
-		date: '2023-01-12 10:00 ~ 12:00 (2시간)',
-		wage: '15,000원',
-		status: '승인 완료',
-	},
-	{
-		store: '써니 브런치 레스토랑',
-		date: '2023-01-12 10:00 ~ 12:00 (2시간)',
-		wage: '15,000원',
-		status: '승인 완료',
-	},
-	{
-		store: '수리 에스프레소 샵',
-		date: '2023-01-12 10:00 ~ 12:00 (2시간)',
-		wage: '15,000원',
-		status: '거절',
-	},
-	{
-		store: '너구리네 라면집',
-		date: '2023-01-12 10:00 ~ 12:00 (2시간)',
-		wage: '15,000원',
-		status: '대기중',
-	},
-	{
-		store: '초가을집',
-		date: '2023-01-12 10:00 ~ 12:00 (2시간)',
-		wage: '15,000원',
-		status: '대기중',
-	},
-	{
-		store: '분명',
-		date: '2024-01-12 10:00 ~ 1200 (2시간)',
-		wage: '13,000원',
-		status: '대기중',
-	},
-	{
-		store: '분명',
-		date: '2024-01-12 10:00 ~ 1200 (2시간)',
-		wage: '13,000원',
-		status: '대기중',
-	},
-	{
-		store: '분명',
-		date: '2024-01-12 10:00 ~ 1200 (2시간)',
-		wage: '13,000원',
-		status: '대기중',
-	},
-	{
-		store: '분명',
-		date: '2024-01-12 10:00 ~ 1200 (2시간)',
-		wage: '13,000원',
-		status: '대기중',
-	},
-	{
-		store: '분명',
-		date: '2024-01-12 10:00 ~ 1200 (2시간)',
-		wage: '13,000원',
-		status: '대기중',
-	},
-	{
-		store: '분명',
-		date: '2024-01-12 10:00 ~ 1200 (2시간)',
-		wage: '13,000원',
-		status: '대기중',
-	},
+//<=
 
-	{
-		store: '분명',
-		date: '2024-01-12 10:00 ~ 1200 (2시간)',
-		wage: '13,000원',
-		status: '대기중',
-	},
-	{
-		store: '분명',
-		date: '2024-01-12 10:00 ~ 1200 (2시간)',
-		wage: '13,000원',
-		status: '대기중',
-	},
-	{
-		store: '분명',
-		date: '2024-01-12 10:00 ~ 1200 (2시간)',
-		wage: '13,000원',
-		status: '대기중',
-	},
-	{
-		store: '분명',
-		date: '2024-01-12 10:00 ~ 1200 (2시간)',
-		wage: '13,000원',
-		status: '대기중',
-	},
-	{
-		store: '분명',
-		date: '2024-01-12 10:00 ~ 1200 (2시간)',
-		wage: '13,000원',
-		status: '대기중',
-	},
-	{
-		store: '분명',
-		date: '2024-01-12 10:00 ~ 1200 (2시간)',
-		wage: '13,000원',
-		status: '대기중',
-	},
-	{
-		store: '분명',
-		date: '2024-01-12 10:00 ~ 1200 (2시간)',
-		wage: '13,000원',
-		status: '대기중',
-	},
-	{
-		store: '분명',
-		date: '2024-01-12 10:00 ~ 1200 (2시간)',
-		wage: '13,000원',
-		status: '대기중',
-	},
-];
+function dateIncode(dateData: string, workTime: number) {
+	const start = dayjs(dateData);
+	const startFormat = start.format('YYYY-MM-DD HH:mm');
 
-export default function WorkTable() {
+	const end = start.add(workTime, 'hour');
+	const endFormat = end.format('HH:mm');
+	return `${startFormat}~${endFormat} (${workTime}시간)`;
+}
+
+function statusSetFunc(statusprop) {
+	switch (statusprop) {
+		case 'pending':
+			return '대기중';
+		case 'accepted':
+			return '승인 완료';
+		case 'rejected':
+			return '거절';
+		default:
+			return '거절';
+	}
+}
+
+export default function WorkTable(items) {
 	const [deviceType, setDeviceType] = useState<'mobile' | 'tablet' | 'desktop'>(useDeviceType());
+	const [workItems, setWorkItems] = useState<WorkItem[]>([]);
+
+	useEffect(() => {
+		//console.log(items.items);
+		//const arrItem = Array.from(items);
+
+		const mapped = items.items.map((application: any) => {
+			const startDate = application.item.notice.item.startsAt;
+			const workTime = application.item.notice.item.workhour;
+			const Worktime = dateIncode(startDate, workTime);
+			const statusSet = statusSetFunc(application.item.status);
+			return {
+				id: application.item.id,
+				store: application.item.shop.item.name,
+				date: Worktime,
+				wage: application.item.notice.item.hourlyPay,
+				status: statusSet,
+				createdAt: application.item.createdAt,
+			};
+		});
+		//console.log(mapped);
+		setWorkItems(mapped);
+	}, [items.items]);
 
 	//창 크기 변경 마다 디바이스타입을 자동으로 다시 계산함
 	useEffect(() => {
@@ -214,7 +144,7 @@ export default function WorkTable() {
 	//meta.responsive 에 따라 표시 여부 결정됨
 
 	const table = useReactTable({
-		data,
+		data: workItems,
 		columns,
 		getCoreRowModel: getCoreRowModel(),
 		getPaginationRowModel: getPaginationRowModel(),

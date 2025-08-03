@@ -62,18 +62,11 @@ const PostDetailPage = () => {
 					shopItem = shopRes.item;
 				}
 
-				const test = await fetchNoticeList({ offset: 0, limit: 100 });
-				const allNotices = test.items.map(({ item }) => ({ ...item, closed: isClosed(item) }));
-				const filteredNotices = allNotices.filter(notice =>
-					recentShops.includes(String(notice.id))
-				);
-
 				if (!noticeItem || !shopItem) throw new Error('데이터 없음');
 
 				setNotice({ ...noticeItem, closed: isClosed(noticeItem) });
 				setShop(shopItem);
 				//setNewlyNotices(listRes.items.map(({ item }) => ({ ...item, closed: isClosed(item) })));
-				setNewlyNotices(filteredNotices);
 			} catch {
 				setAlertMessage('페이지 정보를 불러오지 못했습니다.');
 				setIsConfirmOpen(true);
@@ -87,7 +80,7 @@ const PostDetailPage = () => {
 		if (noticeId) {
 			saveRecentShops(noticeId);
 		}
-	}, [shopId, noticeId, recentShops]);
+	}, [shopId, noticeId]);
 
 	// 로컬스토리지 확인해서 사장님이면 리다이렉트 처리
 	useEffect(() => {
@@ -122,9 +115,32 @@ const PostDetailPage = () => {
 	}, [user, shopId, noticeId]);
 
 	useEffect(() => {
+		if (recentShops.length === 0) return;
+
+		const updateNoticeBoard = async () => {
+			const res = await fetchNoticeList({ offset: 0, limit: 100 });
+			const allNotices = res.items.map(({ item }) => ({ ...item, closed: isClosed(item) }));
+			//const filteredNotices = allNotices.filter(notice => recentShops.includes(String(notice.id)));
+			const filteredNotices = recentShops
+				.map(id => allNotices.find(notice => String(notice.id) === id))
+				.filter((n): n is Notice => !!n);
+
+			setNewlyNotices(filteredNotices);
+		};
+		updateNoticeBoard();
+	}, [recentShops]);
+
+	useEffect(() => {
 		const shopIds = getRecentShops();
 		setRecentShops(shopIds);
 	}, []);
+
+	const handleCardClick = (notice: Notice) => {
+		const shopId = notice.shop?.item?.id;
+		if (shopId) {
+			router.push(`/posts/${shopId}/${notice.id}`);
+		}
+	};
 
 	if (isLoading) return null;
 	if (!notice || !shop) return <p>존재하지 않는 공고입니다.</p>;
@@ -204,7 +220,7 @@ const PostDetailPage = () => {
 				<span className={styles.title}>최근에 본 공고</span>
 				<div className={styles.newlyPost}>
 					{newlyNotices.map((item, idx) => (
-						<SmallNoticePoastCard key={idx} notice={item} />
+						<SmallNoticePoastCard key={idx} notice={item} onClick={() => handleCardClick(item)} />
 					))}
 				</div>
 			</div>
