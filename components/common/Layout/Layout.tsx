@@ -18,10 +18,22 @@ export default function Layout({ children }: LayoutProps) {
 	const isFooterHidden = noFooter.includes(router.pathname);
 	const isHeaderHidden = noHeader.includes(router.pathname);
 
+	// Store pages that need background color
+	const grayPages = [
+		'/owner/store/create',
+		'/owner/store/edit',
+		'/owner/recruit/create',
+		'/employee/profile',
+	];
+	const isGrayPage =
+		grayPages.includes(router.pathname) ||
+		router.pathname.includes('/owner/recruit/') ||
+		router.pathname.includes('/posts/');
+
 	return (
 		<>
 			{!isHeaderHidden && <Header />}
-			<main className={styles.main}>{children}</main>
+			<main className={`${styles.main} ${isGrayPage ? styles['gray-pages'] : ''}`}>{children}</main>
 			{!isFooterHidden && <Footer />}
 		</>
 	);

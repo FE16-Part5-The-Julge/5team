@@ -2,12 +2,15 @@
 	display: flex;
 	flex-direction: column;
 	gap: 20px;
+	padding-top: 40px;
+	padding-bottom: 40px;
+	max-width: 964px;
+	margin: 0 auto;
 }
 
 .header {
 	display: flex;
 	justify-content: space-between;
-	align-items: center;
 }
 
 .title {
@@ -41,6 +44,11 @@
 }
 
 @media screen and (min-width: 768px) {
+	.container {
+		padding-top: 60px;
+		padding-bottom: 60px;
+	}
+
 	.form {
 		gap: 32px;
 	}
