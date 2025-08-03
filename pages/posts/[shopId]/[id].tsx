@@ -23,7 +23,7 @@ import { useUserContext } from '@/contexts/auth-context';
 import { getNoticeById } from '@/api/applications/getNoticeId';
 import { isClosed } from '@/utils/closedNotice';
 
-import { getRecentShops, saveRecentShops } from './recentShopList'; //Helper Func - 최근 방문 공고 로컬스토리지 저장
+import { getRecentShops, saveRecentShops } from '@/utils/recentShopList'; //Helper Func - 최근 방문 공고 로컬스토리지 저장
 
 const PostDetailPage = () => {
 	const router = useRouter();
