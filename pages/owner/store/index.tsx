@@ -1,13 +1,13 @@
 import styles from './index.module.css';
-import { BaseButton } from '@/components/common/BaseButton';
 import PostCard from '@/components/UI/PostCard';
 import SmallNoticePoastCard from '@/components/common/NoticePostCard/SmallNoticePoastCard';
 import { useRouter } from 'next/router';
-import { Shop, NoticeItem } from '@/types';
+import { NoticeItem } from '@/types';
 import { getShopId } from '@/api/employerShop';
 import { getNoticeList } from '@/api/employerNotice';
 import { useEffect, useState } from 'react';
 import { useUserContext } from '@/contexts/auth-context';
+import buttonStyles from '@/components/common/BaseButton/BaseButton.module.css';
 
 export default function StorePage() {
 	const router = useRouter();
@@ -74,15 +74,12 @@ export default function StorePage() {
 				) : (
 					<div className={styles.emptyShop}>
 						<p className={styles.emptyDescription}>내 가게를 소개하고 공고도 등록해 보세요.</p>
-						<div className={styles.buttonGroup}>
-							<BaseButton
-								onClick={() => router.push('/owner/store/create')}
-								size={'noneSize'}
-								color={'red'}
-							>
-								가게 등록하기
-							</BaseButton>
-						</div>
+						<button
+							className={`${styles.shopButton} ${buttonStyles.button} ${buttonStyles.red}`}
+							onClick={() => router.push('/owner/store/create')}
+						>
+							가게 등록하기
+						</button>
 					</div>
 				)}
 			</div>
@@ -106,13 +103,13 @@ export default function StorePage() {
 						) : (
 							<div className={styles.emptyShop}>
 								<p className={styles.emptyDescription}>공고를 등록해 보세요.</p>
-								<BaseButton
+								<button
+									className={`${styles.noticeButton} ${buttonStyles.button} ${buttonStyles.red}`}
 									onClick={() => router.push('/owner/recruit/create')}
-									size={'medium'}
 									color={'red'}
 								>
 									공고 등록하기
-								</BaseButton>
+								</button>
 							</div>
 						)}
 					</div>
