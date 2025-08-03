@@ -68,6 +68,11 @@
 		box-shadow: none;
 		top: 0%;
 		left: 0%;
+		overflow: scroll;
+	}
+
+	.notification::webkit-scrollbar {
+		display: none;
 	}
 
 	.closeIcon {
