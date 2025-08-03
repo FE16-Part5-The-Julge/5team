@@ -15,6 +15,10 @@ export default function Notification({ notifications, onClose }: NotificationPro
 		if (e.target === e.currentTarget) {
 			onClose();
 		}
+
+		if (notifications.length == 0) {
+			<h1 className={styles.headerTitle}>알림 없음</h1>;
+		}
 	};
 
 	return (

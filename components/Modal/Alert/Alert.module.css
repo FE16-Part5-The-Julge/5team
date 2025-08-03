@@ -9,6 +9,10 @@
 	height: 42px;
 }
 
+.message {
+	text-align: center;
+}
+
 @media screen and (min-width: 768px) {
 	.message {
 		font-size: 18px;

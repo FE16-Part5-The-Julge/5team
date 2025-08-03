@@ -1,5 +1,10 @@
 .fullWidthSection {
-	width: 100%;
+	position: relative;
+	left: 50%;
+	right: 50%;
+	margin-left: -50vw;
+	margin-right: -50vw;
+	width: 100vw;
 	background-color: var(--red10);
 }
 
@@ -14,6 +19,7 @@
 	display: flex;
 	flex-direction: column;
 	gap: 32px;
+	padding: 0 14px;
 }
 
 .title {
@@ -29,14 +35,18 @@
 }
 
 .personalPost {
-	display: flex;
-	gap: 14px;
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	column-gap: 9px;
+	row-gap: 16px;
 }
 
 .allPostContainer {
+	position: relative;
 	display: flex;
 	flex-direction: column;
 	gap: 32px;
+	padding: 40px 8px;
 }
 
 .allPostWrapper {
@@ -111,9 +121,11 @@
 }
 
 .allPost {
+	width: 100%;
 	display: grid;
-	grid-template-columns: 1fr 1fr;
-	gap: 16px;
+	grid-template-columns: repeat(2, 1fr);
+	column-gap: 9px;
+	row-gap: 16px;
 }
 
 .pagination {
@@ -146,7 +158,20 @@
 
 @media (min-width: 768px) {
 	.innerContent {
-		padding: 60px 32px;
+		padding: 60px 0px;
+	}
+
+	.personalPostWrapper {
+		padding: 0 38px;
+	}
+
+	.personalPost {
+		grid-template-columns: repeat(3, 1fr);
+	}
+
+	.allPostContainer {
+		height: 1361px;
+		padding: 60px 0px;
 	}
 
 	.allPostWrapper {
@@ -159,19 +184,38 @@
 
 @media (min-width: 1024px) {
 	.innerContent {
-		max-width: 964px;
+		width: 964px;
+		margin: 0 auto;
+	}
+
+	.allNotices {
+		position: relative;
+		left: 50%;
+		right: 50%;
+		margin-left: -50vw;
+		margin-right: -50vw;
+		width: 100vw;
+	}
+
+	.allPostContainer {
+		width: 964px;
+		height: 985px;
 		margin: 0 auto;
 	}
 
 	.allPost {
 		display: grid;
-		grid-template-columns: 1fr 1fr 1fr;
+		grid-template-columns: repeat(3, 1fr);
 		gap: 16px;
+	}
+
+	.personalPostWrapper {
+		padding: 0;
 	}
 
 	.personalPost {
 		display: grid;
-		grid-template-columns: 1fr 1fr 1fr;
+		grid-template-columns: repeat(3, 1fr);
 		gap: 16px;
 	}
 }

@@ -1,4 +1,3 @@
-// src/components/DropdownInput.tsx
 import React, { useState, useRef, useEffect } from 'react';
 import styles from './DropdownInput.module.css';
 import Image from 'next/image';

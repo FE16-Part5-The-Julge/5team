@@ -12,6 +12,8 @@ import useModal from '@/hooks/useModal';
 import Alert from '@/components/Modal/Alert/Alert';
 import Confirm from '@/components/Modal/Confirm/Confirm';
 import { useRouter } from 'next/navigation';
+import { useUserContext } from '@/contexts/auth-context';
+import Image from 'next/image';
 
 interface FormInputs {
 	name: string;
@@ -24,10 +26,13 @@ interface FormInputs {
 }
 // TODO:이미 가게 등록 되어 있으면 가게 정보 상세 페이지로 이동
 const Create = () => {
+	const { user, setUser } = useUserContext();
 	const resultModal = useModal();
 	const errorModal = useModal();
 	const [errorMessage, setErrorMessage] = useState('');
 	const [isSubmitting, setIsSubmitting] = useState(false);
+	const router = useRouter();
+
 	const {
 		handleSubmit,
 		control,
@@ -35,22 +40,27 @@ const Create = () => {
 	} = useForm<FormInputs>({
 		mode: 'onChange',
 	});
-	const router = useRouter();
-	const [shopId, setShopId] = useState<string | null>(null);
 
 	const onSubmit = async (data: FormInputs) => {
 		setIsSubmitting(true);
 		try {
 			const shopData = { ...data };
-			// console.log('Submitting shop data:', shopData);
 			const res = await registerShop(shopData);
-			// console.log('Register shop response:', res);
 			if (typeof res === 'object' && 'item' in res) {
-				setShopId(res.item.id);
+				// user context update
+				if (user) {
+					const updatedUser = {
+						...user,
+						shop: {
+							item: res.item,
+							href: `/shops/${res.item.id}`,
+						},
+					};
+					setUser(updatedUser);
+				}
 			}
 			resultModal.openModal();
 		} catch (error: unknown) {
-			// console.error('Submit error:', error);
 			const err = error as { status?: number; message?: string };
 			if (err.status === 401 || err.status === 409) {
 				setErrorMessage(err.message || '알 수 없는 오류가 발생했습니다.');
@@ -66,7 +76,12 @@ const Create = () => {
 
 	return (
 		<div className={styles.container}>
-			<h1 className={styles.title}>가게 정보</h1>
+			<div className={styles.header}>
+				<h1 className={styles.title}>가게 정보</h1>
+				<button onClick={() => router.back()}>
+					<Image src="/img/icon/closeIcon.svg" alt="가게 편집 닫기" width={32} height={32} />
+				</button>
+			</div>
 			<form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
 				<div className={styles.formSection}>
 					<div className={styles.formRow}>
@@ -201,7 +216,7 @@ const Create = () => {
 				message: '등록이 완료되었습니다.',
 				onConfirm: () => {
 					resultModal.closeModal();
-					router.push(`/owner/store/${shopId}`);
+					router.push(`/owner/store`);
 				},
 			})}
 			{errorModal.renderModal(Confirm, {

@@ -81,7 +81,9 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
 					src={preview || value || ''}
 					alt="미리보기"
 					fill
-					style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+					priority
+					sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+					style={{ objectFit: 'cover' }}
 				/>
 			) : (
 				<div className={styles.container}>

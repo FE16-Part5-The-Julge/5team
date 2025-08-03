@@ -4,6 +4,7 @@ import { getNoticeId } from '@/api/getNoticeId';
 import { useEffect, useState } from 'react';
 import { NoticeItem } from '@/types';
 import { BaseButton } from '@/components/common/BaseButton';
+import VolunteerListTable from './VolunteerListTable';
 
 export default function RecruitDetailPage() {
 	const router = useRouter();
@@ -39,6 +40,9 @@ export default function RecruitDetailPage() {
 					공고 편집하기
 				</BaseButton>
 			</NoticePostCard>
+			{typeof id === 'string' && typeof shopId === 'string' && (
+				<VolunteerListTable shopId={shopId} noticeId={id} />
+			)}
 		</div>
 	);
 }

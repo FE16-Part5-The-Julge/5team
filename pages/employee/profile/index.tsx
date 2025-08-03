@@ -1,6 +1,7 @@
 //hook
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
+import { useUserContext } from '@/contexts/auth-context';
 
 //style
 import styles from './profile.module.css';
@@ -11,50 +12,49 @@ import SmartPhoneIcon from '@/assets/img/smartPhoneIcon.svg';
 
 //Components
 import { BaseButton } from '@/components/common/BaseButton/index';
+import buttonStyle from '@/components/common/BaseButton/BaseButton.module.css';
 
 //api
 import { getUser } from '@/api/users/getUser';
 import WorkTable from './WorkTable';
+import { getUserApplication } from '@/api/applications/getUserApplication';
 
 //받아올 값 : 이름 ,전화번호 ,주소 , 소개
 //employee/profile
 export default function ProfilePage() {
 	const router = useRouter();
 
-	const [userData, setUserData] = useState<any>(null); //實 데이터 상태
+	const [userData, setUserData] = useState<any>(null); //데이터 상태
+	const [userAppData, setUserAppData] = useState<any>(null); // 유저 지원 정보
 	//const [applyList, setApplyList] = useState(); // 신청 내역 여부입니다. default: false.
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
-	const [existProfile, setExistProfile] = useState(true);
+	const [existProfile, setExistProfile] = useState(false);
+	const { user } = useUserContext();
 
-	/****************************************************** */
-	/* 테스트 환경 */
-	const currentUserId = '7d36a348-c505-4452-8f29-a6c1fa1d01c6'; // 실제 사용자 ID
-	const userToken =
-		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI3ZDM2YTM0OC1jNTA1LTQ0NTItOGYyOS1hNmMxZmExZDAxYzYiLCJpYXQiOjE3NTMzNDgzODJ9.G6VJdK55gx8jRPu-eAD0nEdFxCfmv4NRgdniJYffBUo'; // 실제 인증 토큰
-	/****************************************************** */
+	let currentUserId; // 실제 사용자 ID
+	let userToken; // 실제 인증 토큰
 
 	useEffect(() => {
 		//console.log('useEffect가 실행되었습니다!');
+		userToken = localStorage.getItem('token');
+
+		if (user) {
+			currentUserId = user.id;
+		}
 
 		const fetchUserData = async () => {
 			setLoading(true);
 			setError(null);
 			try {
 				// getUser 함수 호출
+				//	console.log(`userID : ${currentUserId}, userToken : ${userToken}`); 토큰, 유저 아이디 값 확인
 				const res = await getUser(currentUserId, userToken);
-				//console.log(res.item);
-				setUserData(res.item);
+				const resApp = await getUserApplication(currentUserId, userToken);
 
-				if (userData.name == null) {
-					setExistProfile(false);
-				}
-
-				return {
-					props: {
-						userData,
-					},
-				};
+				const resitem = res.item;
+				setUserData(resitem);
+				setUserAppData(resApp);
 			} catch (err) {
 				setError('사용자 정보를 가져오는데 실패했습니다.');
 				console.error(err);
@@ -63,24 +63,51 @@ export default function ProfilePage() {
 			}
 		};
 		fetchUserData();
-	}, []);
+	}, [user]);
+
+	useEffect(() => {
+		const check = userData?.name || false;
+		if (check) {
+			setExistProfile(true);
+		} else {
+			setExistProfile(false);
+		}
+	}, [userData]);
+
+	/*	useEffect(() => {
+		console.log(userAppData);
+	}, [userAppData]);
+	*/
 
 	const handleClickPost = () => {
-		router.push('./post');
+		router.push('/posts');
 	};
 
 	const handleClickEdit = () => {
 		router.push('./profile/create');
 	};
 
-	const applyList = userData?.shop || false;
+	if (loading) {
+		return (
+			<div className={styles.applyListContent} style={{ paddingTop: '100px' }}>
+				<div className={styles.Title} style={{ display: 'flex', justifyContent: 'center' }}>
+					불러오는 중 입니다.
+				</div>
+			</div>
+		);
+	}
+
+	const applyList = userAppData?.items?.length > 0 ? userAppData.items : false;
+	//console.log(applyList);
 
 	return (
 		<>
 			{existProfile ? (
 				<>
 					<div className={styles.profileBlock}>
-						<div className={styles.Title}>내 프로필</div>
+						<div className={styles.Title} id={styles.myProfile}>
+							내 프로필
+						</div>
 						<div className={styles.profileDetailed}>
 							<div className={styles.profileDetiledInside}>
 								<div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -115,16 +142,19 @@ export default function ProfilePage() {
 							신청 내역
 						</div>
 						{applyList ? (
-							<WorkTable />
+							<WorkTable items={userAppData.items} />
 						) : (
 							<div className={styles.applyListContent}>
 								<div style={{ display: 'flex', justifyContent: 'center' }}>
 									아직 신청 내역이 없어요.
 								</div>
 								<div style={{ display: 'flex', justifyContent: 'center' }}>
-									<BaseButton size="large" onClick={handleClickPost} color="gray">
+									<button
+										className={`${styles.button} ${buttonStyle.button} ${buttonStyle.red}`}
+										onClick={handleClickPost}
+									>
 										공고 보러가기
-									</BaseButton>
+									</button>
 								</div>
 							</div>
 						)}
@@ -141,9 +171,12 @@ export default function ProfilePage() {
 								내 프로필을 등록하고 원하는 가게에 지원해 보세요.
 							</div>
 							<div style={{ display: 'flex', justifyContent: 'center' }}>
-								<BaseButton size="large" onClick={handleClickEdit} color="gray">
+								<button
+									className={`${styles.buttonRegist} ${buttonStyle.button} ${buttonStyle.red}`}
+									onClick={handleClickEdit}
+								>
 									내 프로필 등록하기
-								</BaseButton>
+								</button>
 							</div>
 						</div>
 					</div>

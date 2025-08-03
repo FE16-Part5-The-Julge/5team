@@ -23,7 +23,6 @@ export const BaseInput = ({
 	width = '100%',
 	required = false,
 	children,
-	...props
 }: BaseInputProps) => {
 	const cloneChildren = React.Children.map(children, child => {
 		if (isValidElement(child)) {

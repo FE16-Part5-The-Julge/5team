@@ -1,12 +1,20 @@
-.container {
-}
-
 .noticePost {
 	padding: 0;
 }
 
+.title {
+	font-size: 20px;
+	font-weight: 700;
+}
+
+.newlyPostWrapper {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	padding: 40px 0px;
+}
+
 .newlyPost {
-	padding: 40px 12px;
 	display: grid;
 	grid-template-columns: 1fr 1fr;
 	gap: 16px;
@@ -21,15 +29,27 @@
 	font-weight: 700;
 }
 
+.button:disabled {
+	cursor: not-allowed;
+}
+
 @media (min-width: 768px) {
-	.container {
-		padding: 60px 32px;
+	.newlyPostWrapper {
+		gap: 32px;
+	}
+
+	.title {
+		font-size: 28px;
 	}
 }
 
 @media (min-width: 1024px) {
 	.container {
-		width: 963px;
+		width: 964px;
 		margin: 0 auto;
+	}
+
+	.newlyPost {
+		grid-template-columns: 1fr 1fr 1fr;
 	}
 }

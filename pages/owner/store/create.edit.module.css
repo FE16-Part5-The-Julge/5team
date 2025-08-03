@@ -2,6 +2,15 @@
 	display: flex;
 	flex-direction: column;
 	gap: 20px;
+	padding-top: 40px;
+	padding-bottom: 40px;
+	max-width: 964px;
+	margin: 0 auto;
+}
+
+.header {
+	display: flex;
+	justify-content: space-between;
 }
 
 .title {
@@ -22,6 +31,12 @@
 	gap: 20px;
 }
 
+.formRow {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+}
+
 .button {
 	width: 100%;
 	height: 48px;
@@ -29,6 +44,11 @@
 }
 
 @media screen and (min-width: 768px) {
+	.container {
+		padding-top: 60px;
+		padding-bottom: 60px;
+	}
+
 	.form {
 		gap: 32px;
 	}
@@ -42,7 +62,6 @@
 	}
 
 	.formRow {
-		display: flex;
 		gap: 20px;
 	}
 
@@ -61,4 +80,8 @@
 
 .imageLabel {
 	font-size: 16px;
+}
+
+.Footer {
+	display: none;
 }

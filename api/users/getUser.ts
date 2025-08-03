@@ -23,7 +23,6 @@ export interface GetUserResponse {
  * @param token 조회할 사용자 토큰
  */
 export const getUser = async (userId: string, token: string) => {
-	// console.log(`userID : ${userId}`);
 	const res = await axiosInstance.get(`/users/${userId}`, {
 		headers: {
 			Authorization: `Bearer ${token}`,

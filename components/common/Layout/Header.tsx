@@ -26,7 +26,7 @@ export default function Header() {
 
 	useEffect(() => {
 		const token = localStorage.getItem('token');
-		console.log(user);
+		//console.log(user);
 		if (token == null) {
 			setLoginState(false);
 		} else {
@@ -55,7 +55,7 @@ export default function Header() {
 	}, [windowWidth]);
 
 	const handleClickLogin = () => {
-		router.push('../login');
+		router.push('/login');
 	};
 
 	const handleClickLogout = () => {
@@ -65,15 +65,15 @@ export default function Header() {
 	};
 
 	const handleClickSignup = () => {
-		router.push('../register');
+		router.push('/register');
 	};
 
 	const handleClickMyShop = () => {
-		router.push('./owner/store');
+		router.push('/owner/store');
 	};
 
 	const handleClickMyProfile = () => {
-		router.push('./employee/profile');
+		router.push('/employee/profile');
 	};
 
 	const handleClickLogoInHeader = () => {
@@ -87,7 +87,7 @@ export default function Header() {
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
 		if (!inputValue.trim()) return;
-		router.push(`/employee/posts?search=${encodeURIComponent(inputValue.trim())}`);
+		router.push(`/posts?search=${encodeURIComponent(inputValue.trim())}`);
 	};
 
 	return (

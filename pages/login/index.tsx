@@ -9,6 +9,8 @@ import { isValidEmail, isValidPassword } from '@/utils/validators';
 import { TextInput } from '@/components/common/inputs/TextInput';
 import { BaseButton } from '@/components/common/BaseButton';
 import { useUserContext } from '@/contexts/auth-context';
+import useModal from '@/hooks/useModal';
+import Alert from '@/components/Modal/Alert/Alert';
 
 export default function Login() {
 	const router = useRouter();
@@ -18,6 +20,9 @@ export default function Login() {
 	const [passwordError, setPasswordError] = useState('');
 	const [loading, setLoading] = useState(false);
 	const { setUser } = useUserContext();
+	const pwModal = useModal();
+	const errorModal = useModal();
+	const loginModal = useModal();
 
 	const validateForm = () => {
 		let isValid = true;
@@ -63,7 +68,7 @@ export default function Login() {
 				const shopRes = await axiosInstance.get(`/users/${userData.id}`);
 				parsedUser = {
 					...parsedUser,
-					shop: shopRes.data.item.shop?.item,
+					shop: shopRes.data.item.shop,
 				};
 			}
 			// 알바면 user정보 추가 요청
@@ -73,30 +78,47 @@ export default function Login() {
 			}
 
 			setUser(parsedUser);
-
-			alert('로그인 성공');
+			loginModal.openModal();
 			router.push('/');
 		} catch (error: unknown) {
 			if (axios.isAxiosError(error)) {
 				const status = error.response?.status;
-				const message = error.response?.data?.message;
 
 				if (status === 404) {
-					alert(message || '이메일 또는 비밀번호가 틀렸습니다.');
+					pwModal.openModal();
 				} else {
-					alert('로그인 중 오류가 발생했습니다.');
+					errorModal.openModal();
 				}
 			} else {
-				alert('예상치 못한 오류가 발생했습니다.');
+				errorModal.openModal();
 			}
 		} finally {
 			setLoading(false);
 		}
 	};
+
+	const handleClickLogoImage = () => {
+		router.push('/posts');
+	};
+
 	return (
 		<div className={styles.container}>
+			{pwModal.renderModal(Alert, {
+				message: '비밀번호가 일치하지 않습니다.',
+				onConfirm: pwModal.closeModal,
+			})}
+			{errorModal.renderModal(Alert, {
+				message: '에러가 발생했습니다. 재시도 하시길 바랍니다',
+				onConfirm: errorModal.closeModal,
+			})}
+			{loginModal.renderModal(Alert, {
+				message: '로그인 성공',
+				onConfirm: loginModal.closeModal,
+			})}
 			<div className={styles.imgcontainer}>
-				<Logo />
+				<button onClick={handleClickLogoImage}>
+					<Logo />
+				</button>
 			</div>
 
 			<form className={styles.formBox} onSubmit={handleLogin}>

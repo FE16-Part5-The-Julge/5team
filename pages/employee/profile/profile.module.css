@@ -6,11 +6,8 @@
 .profileBlock {
 	padding-top: 60px;
 	padding-bottom: 60px;
-	padding-left: 238px;
-	padding-right: 245px;
 	display: flex;
 	justify-content: space-between;
-	gap: 180px;
 }
 
 .profileDetailed {
@@ -48,7 +45,8 @@
 }
 
 .applyListBlock {
-	padding: 60px 238px 120px 238px;
+	padding-top: 60px;
+	padding-bottom: 120px;
 }
 
 .applyListContent {
@@ -74,13 +72,19 @@
 }
 
 .Title#applyListTitle {
-	margin-bottom: 32px;
+	padding-bottom: 32px;
+}
+
+.Title#myProfile {
+	min-width: 112px;
+	margin-right: 100px;
 }
 
 @media screen and (max-width: 1023px) {
 	.profileBlock {
 		flex-direction: column;
-		padding: 60px 32px;
+		padding-top: 60px;
+		padding-bottom: 60px;
 		gap: 24px;
 	}
 	.profileDetailed {
@@ -88,13 +92,21 @@
 	}
 
 	.applyListBlock {
-		padding: 60px 32px;
+		padding-top: 60px;
+		padding-bottom: 60px;
 	}
+}
+
+.button,
+.buttonRegist {
+	width: 346px;
+	height: 47px;
 }
 
 @media screen and (max-width: 767px) {
 	.profileBlock {
-		padding: 40px 12px;
+		padding-top: 40px;
+		padding-bottom: 40px;
 	}
 
 	.Title {
@@ -121,10 +133,49 @@
 		gap: 20px;
 	}
 	.applyListBlock {
-		padding: 80px 12px;
+		padding-top: 80px;
+		padding-bottom: 80px;
 	}
 
 	.Title#applyListTitle {
 		margin-bottom: 16px;
+	}
+
+	.button {
+		width: 108px;
+		height: 37px;
+		font-size: 14px;
+	}
+
+	.buttonRegist {
+		width: 150px;
+		height: 37px;
+		font-size: 14px;
+	}
+}
+
+.spinner-container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+	height: 200px;
+}
+
+.spinner {
+	width: 50px;
+	height: 50px;
+	border: 5px solid #ff6a6a;
+	border-top: 5px solid #dfdfdf;
+	border-radius: 50%;
+	animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(360deg);
 	}
 }

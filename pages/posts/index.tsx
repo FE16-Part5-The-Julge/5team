@@ -7,13 +7,17 @@ import styles from './posts.module.css';
 
 import { Notice, GetNoticeResponse } from '@/types/userNotice';
 import { fetchNoticeList, NoticeQueryParams } from '@/api/users/getNotice';
+import { getUser } from '@/api/users/getUser';
 import SmallNoticePoastCard from '@/components/common/NoticePostCard/SmallNoticePoastCard';
 import DetailFilter from '@/components/UI/DetailFilter';
-import { getUser } from '@/api/users/getUser';
-import { formatToRFC3339 } from '@/utils/dayformatting';
-import { useUserContext } from '@/contexts/auth-context';
+import Confirm from '@/components/Modal/Confirm/Confirm';
 
-const PERSONAL_NOTICE_LIMIT = 3;
+import { formatToRFC3339 } from '@/utils/dayformatting';
+import { isClosed } from '@/utils/closedNotice';
+import { useUserContext } from '@/contexts/auth-context';
+import useModal from '@/hooks/useModal';
+
+const PERSONAL_NOTICE_LIMIT = 30;
 const NOTICE_LIMIT = 6;
 const sortOptions = [
 	{ label: '마감임박순', value: 'time' },
@@ -30,7 +34,7 @@ interface Props {
 interface DetailFilterState {
 	startsAtGte: string;
 	hourlyPayGte: string;
-	selectedAddresses: string[];
+	selectedAddress: string | null;
 }
 
 export const getServerSideProps: GetServerSideProps = async () => {
@@ -41,6 +45,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
 		limit: PERSONAL_NOTICE_LIMIT,
 		address,
 	});
+
 	const initialNotices = await fetchNoticeList({ offset: 0, limit: NOTICE_LIMIT });
 	return {
 		props: {
@@ -51,17 +56,35 @@ export const getServerSideProps: GetServerSideProps = async () => {
 };
 
 const Posts = ({ personalNotices, initialNotices }: Props) => {
-	const [customNotices, setCustomNotices] = useState(personalNotices.items);
+	// 맞춤공고
+	const [noticesToShow, setNoticesToShow] = useState(3);
+	const initialCustomNotices = personalNotices.items
+		.filter(({ item }) => !isClosed(item))
+		.slice(0, noticesToShow);
+	const [customNotices, setCustomNotices] = useState(initialCustomNotices);
 
+	// 필터 관련
 	const [showFilter, setShowFilter] = useState(false);
 	const [sortOption, setSortOption] = useState<'time' | 'pay' | 'hour' | 'shop'>('time');
 	const [showDetailFilter, setShowDetailFilter] = useState(false);
 	const [detailFilterCount, setDetailFilterCount] = useState(0);
+
+	// 검색 관련 상태관리
 	const [detailFilterState, setDetailFilterState] = useState<DetailFilterState>({
 		startsAtGte: '',
 		hourlyPayGte: '',
-		selectedAddresses: [],
+		selectedAddress: '',
 	});
+
+	const [appliedFilterState, setAppliedFilterState] = useState<DetailFilterState>({
+		startsAtGte: '',
+		hourlyPayGte: '',
+		selectedAddress: null,
+	});
+
+	// 모달 관련
+	const { isOpen, openModal, closeModal } = useModal();
+	const [modalMessage, setModalMessage] = useState('');
 
 	// 유저 정보 가져오기
 	const { user } = useUserContext();
@@ -82,16 +105,41 @@ const Posts = ({ personalNotices, initialNotices }: Props) => {
 	const isFirstPage = currentPage === 1;
 	const isLastPage = currentPage === totalPages;
 
+	// 모바일 크기에서 맞춤공고 2개 렌더링
+	useEffect(() => {
+		const handleResize = () => {
+			if (window.innerWidth < 768) {
+				setNoticesToShow(2);
+			} else {
+				setNoticesToShow(3);
+			}
+		};
+		handleResize();
+		window.addEventListener('resize', handleResize);
+
+		return () => window.removeEventListener('resize', handleResize);
+	}, []);
+
 	// 로컬스토리지에서 주소값 가져와서 맞춤공고 렌더링
 	useEffect(() => {
 		const token = localStorage.getItem('token');
-		if (!token || !user) return;
+		const isLoggedIn = !!token && !!user;
+
+		// 로그인 상태가 아닐 경우의 로직
+		if (!isLoggedIn) {
+			const nonLoggedInNotices = personalNotices.items
+				.filter(({ item }) => !isClosed(item))
+				.slice(0, noticesToShow);
+			setCustomNotices(nonLoggedInNotices);
+			return;
+		}
 
 		const fetchUserAddress = async () => {
 			try {
-				const res = await getUser(user.id, token);
+				const res = await getUser(user.id, token as string);
 				const address = res.item.address;
 
+				// 사용자 주소가 있으면 해당 주소의 공고 목록 불러오기
 				if (address) {
 					const updatedNotices = await fetchNoticeList({
 						offset: 0,
@@ -99,20 +147,36 @@ const Posts = ({ personalNotices, initialNotices }: Props) => {
 						address: `${address}`,
 					});
 
-					// 유저 주소에 맞는 공고가 없으면 기본값 보여줌
-					if (updatedNotices.items.length > 0) {
-						setCustomNotices(updatedNotices.items);
+					// 마감되지 않은 공고 필터링
+					const filteredUpdatedNotices = updatedNotices.items.filter(({ item }) => !isClosed(item));
+
+					// 필터링된 공고가 있는 경우 3개까지 보여줌
+					if (filteredUpdatedNotices.length > 0) {
+						const finalNotices = filteredUpdatedNotices.slice(0, noticesToShow);
+						setCustomNotices(finalNotices);
 					} else {
-						setCustomNotices(personalNotices.items);
+						// 사용자 주소에 맞는 공고가 없으면 기본공고 렌더링
+						const fallbackNotices = personalNotices.items
+							.filter(({ item }) => !isClosed(item))
+							.slice(0, noticesToShow);
+						setCustomNotices(fallbackNotices);
 					}
+				} else {
+					// 사용자 주소가 없으면, 기본공고 렌더링
+					const fallbackNotices = personalNotices.items
+						.filter(({ item }) => !isClosed(item))
+						.slice(0, noticesToShow);
+					setCustomNotices(fallbackNotices);
 				}
-			} catch (err) {
-				console.error('유저 정소 불러오기 실패', err);
-				setCustomNotices(personalNotices.items);
+			} catch {
+				const fallbackNotices = personalNotices.items
+					.filter(({ item }) => !isClosed(item))
+					.slice(0, noticesToShow);
+				setCustomNotices(fallbackNotices);
 			}
 		};
 		fetchUserAddress();
-	}, [user]);
+	}, [user, personalNotices, noticesToShow]);
 
 	// 전체 공고 부분 렌더링 + 검색 기능
 	useEffect(() => {
@@ -123,14 +187,14 @@ const Posts = ({ personalNotices, initialNotices }: Props) => {
 				sort: sortOption,
 			};
 
-			if (detailFilterState.selectedAddresses.length > 0) {
-				queryParams.address = detailFilterState.selectedAddresses[0];
+			if (appliedFilterState.startsAtGte.trim()) {
+				queryParams.startsAtGte = formatToRFC3339(appliedFilterState.startsAtGte.trim());
 			}
-			if (detailFilterState.startsAtGte.trim()) {
-				queryParams.startsAtGte = formatToRFC3339(detailFilterState.startsAtGte.trim());
+			if (appliedFilterState.selectedAddress) {
+				queryParams.address = appliedFilterState.selectedAddress;
 			}
-			if (detailFilterState.hourlyPayGte.trim()) {
-				queryParams.hourlyPayGte = Number(detailFilterState.hourlyPayGte);
+			if (appliedFilterState.hourlyPayGte.trim()) {
+				queryParams.hourlyPayGte = Number(appliedFilterState.hourlyPayGte);
 			}
 			if (searchQuery) {
 				queryParams.keyword = searchQuery;
@@ -143,11 +207,33 @@ const Posts = ({ personalNotices, initialNotices }: Props) => {
 		};
 
 		fetchNotice();
-	}, [offset, sortOption, detailFilterState, searchQuery]);
+	}, [offset, sortOption, appliedFilterState, searchQuery]);
 
-	// const handlePageClick = (page: number) => {
-	// 	setOffset((page - 1) * NOTICE_LIMIT);
-	// };
+	const handleCardClick = (notice: Notice) => {
+		const shopId = notice.shop?.item?.id;
+		if (shopId) {
+			router.push(`/posts/${shopId}/${notice.id}`);
+		}
+	};
+
+	const handleApplyFilter = (newFilterState: DetailFilterState) => {
+		if (newFilterState.startsAtGte.trim()) {
+			const dateStr = newFilterState.startsAtGte.trim();
+			if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+				setModalMessage('날짜 형식이 올바르지 않습니다.');
+				openModal();
+				return;
+			}
+		}
+
+		setAppliedFilterState(newFilterState);
+		setOffset(0);
+
+		let count = newFilterState.selectedAddress ? 1 : 0;
+		if (newFilterState.startsAtGte.trim() !== '') count += 1;
+		if (newFilterState.hourlyPayGte.trim() !== '') count += 1;
+		setDetailFilterCount(count);
+	};
 
 	return (
 		<>
@@ -157,16 +243,23 @@ const Posts = ({ personalNotices, initialNotices }: Props) => {
 						<div className={styles.personalPostWrapper}>
 							<p className={styles.title}>맞춤 공고</p>
 							<div className={styles.personalPost}>
-								{customNotices.map(({ item }: { item: Notice }, idx: number) => (
-									<SmallNoticePoastCard key={idx} notice={item} />
-								))}
+								{customNotices.map(({ item }: { item: Notice }, idx: number) => {
+									const closed = isClosed(item);
+									return (
+										<SmallNoticePoastCard
+											key={idx}
+											notice={{ ...item, closed }}
+											onClick={() => handleCardClick(item)}
+										/>
+									);
+								})}
 							</div>
 						</div>
 					</div>
 				</div>
 			)}
 
-			<div className={styles.innerContent}>
+			<div className={styles.allNotices}>
 				<div className={styles.allPostContainer}>
 					<div className={styles.allPostWrapper}>
 						<span className={styles.title}>
@@ -188,7 +281,6 @@ const Posts = ({ personalNotices, initialNotices }: Props) => {
 									height={8}
 								/>
 							</button>
-
 							{showFilter && (
 								<ul className={styles.dropdown}>
 									{sortOptions.map(({ label, value }) => (
@@ -196,7 +288,6 @@ const Posts = ({ personalNotices, initialNotices }: Props) => {
 											key={value}
 											className={styles.dropdownItem}
 											onClick={() => {
-												// console.log('선택된 정렬 옵션:', value);
 												setSortOption(value as 'time' | 'pay' | 'hour' | 'shop');
 												setShowFilter(false);
 												setOffset(0);
@@ -207,29 +298,38 @@ const Posts = ({ personalNotices, initialNotices }: Props) => {
 									))}
 								</ul>
 							)}
-
 							<button className={styles.detailFilter} onClick={() => setShowDetailFilter(true)}>
 								<p>상세 필터{detailFilterCount > 0 && ` (${detailFilterCount})`}</p>
 							</button>
-
 							{showDetailFilter && (
 								<DetailFilter
 									onClose={() => setShowDetailFilter(false)}
-									onApply={(count: number) => {
-										setDetailFilterCount(count);
-										setShowDetailFilter(false);
-										setOffset(0);
-									}}
+									onApply={handleApplyFilter}
 									detailFilterState={detailFilterState}
 									setDetailFilterState={setDetailFilterState}
 								/>
 							)}
+							{isOpen && (
+								<Confirm
+									isOpen={isOpen}
+									onClose={closeModal}
+									message={modalMessage}
+									onConfirm={closeModal}
+								/>
+							)}{' '}
 						</div>
 					</div>
 					<div className={styles.allPost}>
-						{notices.map(({ item }: { item: Notice }, idx: number) => (
-							<SmallNoticePoastCard key={idx} notice={item} />
-						))}
+						{notices.map(({ item }: { item: Notice }, idx: number) => {
+							const closed = isClosed(item);
+							return (
+								<SmallNoticePoastCard
+									key={idx}
+									notice={{ ...item, closed }}
+									onClick={() => handleCardClick(item)}
+								/>
+							);
+						})}
 					</div>
 
 					<div className={styles.pagination}>
@@ -240,7 +340,7 @@ const Posts = ({ personalNotices, initialNotices }: Props) => {
 							}}
 							className={styles.arrowButton}
 						>
-							<img src="/img/icon/leftIcon.svg" alt="이전페이지" />
+							<img src="/img/icon/leftIcon.svg" alt="이전페이지" width={9} height={16} />
 						</button>
 
 						{Array.from({ length: pageCount }).map((_, i) => {
@@ -262,7 +362,7 @@ const Posts = ({ personalNotices, initialNotices }: Props) => {
 							onClick={() => setOffset(offset + NOTICE_LIMIT)}
 							className={styles.arrowButton}
 						>
-							<img src="/img/icon/rightIcon.svg" alt="다음페이지" />
+							<img src="/img/icon/rightIcon.svg" alt="다음페이지" width={9} height={16} />
 						</button>
 					</div>
 				</div>

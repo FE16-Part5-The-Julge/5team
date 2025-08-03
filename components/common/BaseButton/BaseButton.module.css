@@ -63,7 +63,7 @@
 	font-size: 14px;
 	display: block;
 	width: 100%;
-	height: auto;
+	height: 100%;
 }
 
 /* 예외 스타일 - gray 계열은 크기별 오버라이드 */

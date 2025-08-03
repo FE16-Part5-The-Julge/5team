@@ -13,12 +13,16 @@ export default function Layout({ children }: LayoutProps) {
 	if (router.pathname === '/login' || router.pathname === '/register') {
 		return <main className={styles.main}>{children}</main>;
 	}
+	const noHeader = ['/login', '/register'];
+	const noFooter = ['/owner/store/create', '/owner/store/edit'];
+	const isFooterHidden = noFooter.includes(router.pathname);
+	const isHeaderHidden = noHeader.includes(router.pathname);
 
 	return (
 		<>
-			<Header />
+			{!isHeaderHidden && <Header />}
 			<main className={styles.main}>{children}</main>
-			<Footer />
+			{!isFooterHidden && <Footer />}
 		</>
 	);
 }

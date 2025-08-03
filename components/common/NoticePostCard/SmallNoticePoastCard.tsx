@@ -7,7 +7,7 @@ import UpArrowIcon from '@/assets/img/upArrowIcon';
 
 type Props = {
 	notice: NoticeItem;
-	onClick?: () => void;
+	onClick: () => void;
 };
 
 const SmallNoticePoastCard = ({ notice, onClick }: Props) => {
@@ -43,7 +43,7 @@ const SmallNoticePoastCard = ({ notice, onClick }: Props) => {
 					{!isClosed && (
 						<li className={styles.houlyPayBadge}>
 							기존 시급보다 {percentIncrease}%
-							<UpArrowIcon color="#ff4040" />
+							<UpArrowIcon className={styles.upArrowIcon} />
 						</li>
 					)}
 				</div>
