@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
 import NoticePostCard from '@/components/common/NoticePostCard';
-import { getNoticeId } from '@/api/getNoticeId';
+import { getNoticeId } from '@/api/employerNotice';
 import { useEffect, useState } from 'react';
 import { NoticeItem } from '@/types';
 import { BaseButton } from '@/components/common/BaseButton';

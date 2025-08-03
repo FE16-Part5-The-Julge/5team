@@ -15,7 +15,7 @@ import { BaseButton } from '@/components/common/BaseButton/index';
 import buttonStyle from '@/components/common/BaseButton/BaseButton.module.css';
 
 //api
-import { getUser } from '@/api/users/getUser';
+import { getUser } from '@/api/usersInfo';
 import WorkTable from './WorkTable';
 import { getUserApplication } from '@/api/applications/getUserApplication';
 

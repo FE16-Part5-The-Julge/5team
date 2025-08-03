@@ -1,7 +1,13 @@
-import axiosInstance from './settings/axiosInstance';
+import axiosInstance from '@/api/settings/axiosInstance';
+import { Shop } from '@/types';
 import type { AxiosError } from 'axios';
-import type { Shop } from '@/types/shop';
 import type { Link } from '@/types/link';
+
+export const getShopId = async (userId: string): Promise<{ item: Shop }> => {
+	const res = await axiosInstance.get(`/users/${userId}`);
+	const shop = res.data.item.shop?.item ?? null;
+	return { item: shop };
+};
 
 type ReqShop = Omit<Shop, 'id'>;
 

@@ -6,8 +6,8 @@ import { useEffect, useState } from 'react';
 import styles from './posts.module.css';
 
 import { Notice, GetNoticeResponse } from '@/types/userNotice';
-import { fetchNoticeList, NoticeQueryParams } from '@/api/users/getNotice';
-import { getUser } from '@/api/users/getUser';
+import { fetchNoticeList, NoticeQueryParams } from '@/api/usersInfo';
+import { getUser } from '@/api/usersInfo';
 import SmallNoticePoastCard from '@/components/common/NoticePostCard/SmallNoticePoastCard';
 import DetailFilter from '@/components/UI/DetailFilter';
 import Confirm from '@/components/Modal/Confirm/Confirm';
