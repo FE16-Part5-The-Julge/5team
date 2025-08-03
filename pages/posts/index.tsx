@@ -243,13 +243,16 @@ const Posts = ({ personalNotices, initialNotices }: Props) => {
 						<div className={styles.personalPostWrapper}>
 							<p className={styles.title}>맞춤 공고</p>
 							<div className={styles.personalPost}>
-								{customNotices.map(({ item }: { item: Notice }, idx: number) => (
-									<SmallNoticePoastCard
-										key={idx}
-										notice={item}
-										onClick={() => handleCardClick(item)}
-									/>
-								))}
+								{customNotices.map(({ item }: { item: Notice }, idx: number) => {
+									const closed = isClosed(item);
+									return (
+										<SmallNoticePoastCard
+											key={idx}
+											notice={{ ...item, closed }}
+											onClick={() => handleCardClick(item)}
+										/>
+									);
+								})}
 							</div>
 						</div>
 					</div>
