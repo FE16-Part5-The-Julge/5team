@@ -21,6 +21,8 @@ export default function Login() {
 	const [loading, setLoading] = useState(false);
 	const { setUser } = useUserContext();
 	const pwModal = useModal();
+	const errorModal = useModal();
+	const loginModal = useModal();
 
 	const validateForm = () => {
 		let isValid = true;
@@ -76,8 +78,7 @@ export default function Login() {
 			}
 
 			setUser(parsedUser);
-
-			alert('로그인 성공');
+			loginModal.openModal();
 			router.push('/');
 		} catch (error: unknown) {
 			if (axios.isAxiosError(error)) {
@@ -86,10 +87,10 @@ export default function Login() {
 				if (status === 404) {
 					pwModal.openModal();
 				} else {
-					pwModal.openModal();
+					errorModal.openModal();
 				}
 			} else {
-				alert('예상치 못한 오류가 발생했습니다.');
+				errorModal.openModal();
 			}
 		} finally {
 			setLoading(false);
@@ -105,6 +106,14 @@ export default function Login() {
 			{pwModal.renderModal(Alert, {
 				message: '비밀번호가 일치하지 않습니다.',
 				onConfirm: pwModal.closeModal,
+			})}
+			{errorModal.renderModal(Alert, {
+				message: '에러가 발생했습니다. 재시도 하시길 바랍니다',
+				onConfirm: errorModal.closeModal,
+			})}
+			{loginModal.renderModal(Alert, {
+				message: '로그인 성공',
+				onConfirm: loginModal.closeModal,
 			})}
 			<div className={styles.imgcontainer}>
 				<button onClick={handleClickLogoImage}>
