@@ -29,6 +29,8 @@
 }
 
 .formRow {
+	display: flex;
+	flex-direction: column;
 	gap: 20px;
 }
 
@@ -52,7 +54,6 @@
 	}
 
 	.formRow {
-		display: flex;
 		gap: 20px;
 	}
 
